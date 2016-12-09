@@ -1,0 +1,42 @@
+/*.task{
+    margin-bottom: 10px;
+}
+
+.longterm {
+    background-color: lightgrey;
+}
+
+.mimic-done{
+    background-color: lightgrey;
+}
+
+.panel-heading{
+    font-weight: bold;
+}
+*/
+
+/*.task-today-button{
+    padding: 3px;
+    float: right;
+    margin-top: -16px;
+    margin-right: -1px; /*could improve this*/
+/*}
+.task .panel-body{
+    padding-right: 0px;
+}*/
+
+.input-group{
+    margin-bottom: 10px;
+}
+
+li:hover{
+    background-color: #E6E9ED;
+    cursor: pointer;
+}
+
+.selected{
+    background-color: #CCD1D9
+}
+.selected:hover{
+    background-color: #CCD1D9
+}

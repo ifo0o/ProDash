@@ -1,0 +1,37 @@
+doctype html
+html(lang='en')
+    head
+        meta(charset='utf-8')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge')
+        meta(name='viewport', content='width=device-width, initial-scale=1')
+        // The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags
+        meta(name='description', content='')
+        meta(name='author', content='')
+        title ProducDash
+        // Bootstrap core CSS
+        link(href='Stylesheets/bootstrap-3.3.5-dist/css/bootstrap.min.css', rel='stylesheet')
+        // Bootflat theme
+        link(href='Stylesheets/bootflat/css/bootflat.css', rel='stylesheet')
+        // Custom stylesheets
+        link(href='Stylesheets/sidebar_stylesheet.css', rel='stylesheet')
+        link(href='Stylesheets/tasks_stylesheet.css', rel='stylesheet')
+        // Load jQuery Library
+        script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+        script(type='text/javascript', src='Stylesheets/bootstrap-3.3.5-dist/js/bootstrap.min.js')
+        // Load custom JavaScript
+        script(type='text/javascript', src='Javascripts/Tex/mainTex.js')
+    body
+        .container-fluid
+            .row
+                .col-sm-3.col-md-3.col-lg-2.sidebar
+                    ul.nav.nav-sidebar
+                        li
+                            a(href='/')
+                                h5 Overzicht
+                        li.active
+                            a(href='/text')
+                                h4 Tekst
+            .row
+                .col-sm-9.col-sm-offset-3.col-md-9.col-md-offset-3.col-lg-5.col-lg-offset-2
+                    textarea.form-control#tex(rows='15')
+                    button.btn.btn-primary.btn-block#sendtex(type='button') Send
