@@ -1,66 +1,61 @@
-function displayLists(type){
-    if(type==="lists"){
-        var listnames = ["Snelle taken","Privé", "School", "Werk", "Lange termijn", "Nog in te leveren"];
-    }else if(type==="subs"){
-        var listnames = ["STO","STA","PRO"];
+function displayLists(type) {
+    if(type === "lists") {
+        var listnames = ["Snelle taken", "Privé", "School", "Werk", "Lange termijn", "Nog in te leveren"];
+    } else if(type === "subs") {
+        var listnames = ["STO", "STA", "PRO"];
     };
 
     var stdcol = '<div class="col-sm-3 col-md-3 col-lg-2 ' //space
-    columnarray = [
-        stdcol+'col-sm-offset-3 col-md-offset-3 col-lg-offset-2">',
-        stdcol+'">',
-        stdcol+'">',
-        stdcol+'col-sm-offset-3 col-md-offset-3 col-lg-offset-0">',
-        stdcol+'">',
-        stdcol+'col-sm-offset-0 col-md-offset-0 col-lg-offset-10">' //float last one to right
+    var columnarray = [
+        stdcol + 'col-sm-offset-3 col-md-offset-3 col-lg-offset-2">',
+        stdcol + '">',
+        stdcol + '">',
+        stdcol + 'col-sm-offset-3 col-md-offset-3 col-lg-offset-0">',
+        stdcol + '">',
+        stdcol + 'col-sm-offset-0 col-md-offset-0 col-lg-offset-10">' //float last one to right
     ];
 
-    $.each(listnames,function(index,value){
-
-        if(type==="lists"){
+    $.each(listnames, function(index, value) {
+        if(type === "lists") {
             var listid = getListid(value);
-        }else if(type==="subs"){
+        } else if(type === "subs") {
             var listid = value;
         };
-
-        $("#tasks").append(columnarray[index]+returnListDiv(type,listid)+'</div>')
+        $("#tasks").append(columnarray[index] + returnListDiv(type, listid) + '</div>')
     });
-
 }
 
-function returnListDiv(type,id){
-    if(type==="lists"){
+function returnListDiv(type, id) {
+    if(type === "lists") {
         var listname = getListName(id)
-    }else if(type==="subs"){
-        var listname = id
+    } else if(type === "subs") {
+        var listname = id;
     };
 
     var cont = "";
-    cont += '<div class="panel panel-info" rel="'+id+'">'
-    cont += '<div class="panel-heading">'+listname+'</div>'
-    cont += '<div class="list-group">'
+    cont += '<div class="panel panel-info" rel="' + id + '">';
+    cont += '<div class="panel-heading">' + listname + '</div>';
+    cont += '<div class="list-group">';
 
-    if(type==="lists"){
-        $.each(cache, function(){
-            if(this.list_id===id){
-                cont += returnTaskDiv(this,false);
+    if(type === "lists") {
+        $.each(cache, function() {
+            if(this.list_id === id) {
+                cont += returnTaskDiv(this, false);
             };
         });
-    }else if(type==="subs"){
-        $.each(cache, function(){
-            if(this.title.substring(0,3)===id){
-                cont += returnTaskDiv(this,true);
+    } else if(type === "subs") {
+        $.each(cache, function() {
+            if(this.title.substring(0, 3) === id) {
+                cont += returnTaskDiv(this, true);
             };
         });
     };
-
-    cont += '</div></div>'
-
+    cont += '</div></div>';
     return cont;
 };
 
-function returnTaskDiv(task,markLongTerm){
-    var task = '<li class="list-group-item taskitem" rel='+task.id+'>'+task.title+'</li>';
+function returnTaskDiv(task, markLongTerm) {
+    var task = '<li class="list-group-item taskitem" rel=' + task.id + '>' + task.title + '</li>';
     return task;
 };
 

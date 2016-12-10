@@ -1,174 +1,80 @@
-selTask = -1;
+var selTask = -1; //currently selected task
 
 var main = function() {
-    $.when(initLists).done(function(){ //build cache
+
+    //Build cache
+    $.when(initLists).done(function() {
         initTasks();
     });
 
-    $(document).on("click", "#persubject-button", clearTasks)
-    $(document).on("click", "#persubject-button", function(e){displayLists('subs')})
+    //Switch list displays
+    $(document).on("click", "#persubject-button", function(e) {
+        clearTasks();
+        displayLists('subs');
+    });
+    $(document).on("click", "#permainlist-button", function(e) {
+        clearTasks();
+        displayLists('lists');
+    });
 
-    $(document).on("click", "#permainlist-button", clearTasks)
-    $(document).on("click", "#permainlist-button", function(e){displayLists('lists')})
+    //Newtask button and form
+    $(document).on("click", "#newtask-button", function(e) {
+        addTask({
+            "list_id": getListid("Snelle taken"),
+            "title": $("#newtask-input").val()
+        });
+        $("#newtask-input").val("");
+    });
+    $(document).on("submit", "#newtask", function(e) {
+        e.preventDefault();
+        addTask({
+            "list_id": getListid("Snelle taken"),
+            "title": $("#newtask-input").val()
+        });
+        $("#newtask-input").val("");
+    });
 
-    $(document).on("click", "#newtask-button", addTask);
-
-    $(document).on("click", ".taskitem", function(e){selectTask($(this).attr('rel'))});
+    //Selecting tasks
+    $(document).on("click", ".taskitem", function(e) {
+        selectTask($(this).attr('rel'))
+    });
     //$(document).on("click", ".taskitem", function(e){modTask(this.rel,{            'completed' : true})});
-    $(document).on( "keydown", function(e){
-        if(e.which == 13){
-            if($('.selected').attr('rel')!==undefined){
-                modTask($('.selected').attr('rel'),{'completed' : true});
+
+    //Keyboard functions
+    $(document).on("keydown", function(e) {
+        if(e.which == 13 && e.shiftKey) {
+            if($('.selected').attr('rel') !== undefined) {
+                modTask($('.selected').attr('rel'), {
+                    'completed': true
+                });
             }
-        }else if(e.which==37){//left
+        } else if(e.shiftKey && e.which == 39) { //shift+right
+            moveToNextList()
+        } else if(e.shiftKey && e.which == 37) { //shift+left
+            moveToPrevList()
+        } else if(e.altKey && e.which == 78) { //ctlr+n
+            if($("#newtask-input").is(":focus")){
+                $("#newtask-input").blur();
+            }else{
+                e.preventDefault()
+                $("#newtask-input").focus();
+            };
+        } else if(e.which == 37) { //left
             selectPrevList()
-        }else if(e.which==38){//up
+        } else if(e.which == 38) { //up
             selectPrevTask()
-        }else if(e.which==39){//right
+        } else if(e.which == 39) { //right
             selectNextList()
-        }else if(e.which==40){//down
+        } else if(e.which == 40) { //down
             selectNextTask()
+        } else if(e.which == 27) { //esc
+            deselectTask()
         }
     });
 
 };
 
 $(document).ready(main);
-
-function selectTask(id){
-    $(".taskitem").removeClass('selected')
-    $('li[rel="'+id+'"]').addClass('selected')
-}
-function selectFirstTask(){
-    //first_task = $.grep(cache, function(value,index){return(value.list_id==getListid('Snelle taken'))})
-    //selectTask(first_task[0].id)
-    selTask = 0;
-    selectTask(cache[selTask].id)
-}
-function selectNextTask(){
-    if(selTask == -1){ //if none selected
-        selTask = 0;
-        selectTask(cache[selTask].id)
-    }else{
-        if(selTask == cache.length-1){
-            selTask=0;
-        }else{
-            selTask++;
-        }
-        selectTask(cache[selTask].id)
-    }
-}
-function selectPrevTask(){
-    if(selTask == -1){ //if none selected
-        selTask = 0;
-        selectTask(cache[selTask].id)
-    }else{
-        if(selTask == 0){
-            selTask=cache.length-1;
-        }else{
-            selTask--;
-        }
-        selectTask(cache[selTask].id)
-    }
-}
-function selectNextList(){
-    if(selTask == -1){ //if none selected
-        selTask = 0;
-        selectTask(cache[selTask].id)
-    }else{
-        var currentList = cache[selTask].list_number
-        selTask = cache.findIndex(function(e){return e.list_number>currentList}) //> since very next list could be empty
-        if(selTask === -1){selTask=0} //returned -1 if couldnt find next task, then start at beginning
-        selectTask(cache[selTask].id)
-    }
-}
-function selectPrevList(){
-    if(selTask == -1){ //if none selected
-        selTask = 0;
-        selectTask(cache[selTask].id)
-    }else{
-        console.log(selTask)
-        var currentList = cache[selTask].list_number
-        if(currentList == 0){
-            currentList = 7; //hardcoded length
-        }
-        var i = 1
-        do{
-            selTask = cache.findIndex(function(e){return e.list_number==currentList-i})
-            console.log(selTask)
-            i++
-        }
-        while(selTask == -1)
-        selectTask(cache[selTask].id)
-    }
-}
-
-
-//SORTER
-var sort_by;
-
-(function() {
-    // utility functions
-    var default_cmp = function(a, b) {
-            if (a == b) return 0;
-            return a < b ? -1 : 1;
-        },
-        getCmpFunc = function(primer, reverse) {
-            var dfc = default_cmp, // closer in scope
-                cmp = default_cmp;
-            if (primer) {
-                cmp = function(a, b) {
-                    return dfc(primer(a), primer(b));
-                };
-            }
-            if (reverse) {
-                return function(a, b) {
-                    return -1 * cmp(a, b);
-                };
-            }
-            return cmp;
-        };
-
-    // actual implementation
-    sort_by = function() {
-        var fields = [],
-            n_fields = arguments.length,
-            field, name, reverse, cmp;
-
-        // preprocess sorting options
-        for (var i = 0; i < n_fields; i++) {
-            field = arguments[i];
-            if (typeof field === 'string') {
-                name = field;
-                cmp = default_cmp;
-            }
-            else {
-                name = field.name;
-                cmp = getCmpFunc(field.primer, field.reverse);
-            }
-            fields.push({
-                name: name,
-                cmp: cmp
-            });
-        }
-
-        // final comparison function
-        return function(A, B) {
-            var a, b, name, result;
-            for (var i = 0; i < n_fields; i++) {
-                result = 0;
-                field = fields[i];
-                name = field.name;
-
-                result = field.cmp(A[name], B[name]);
-                if (result !== 0) break;
-            }
-            return result;
-        }
-    }
-}());
-
-
 
 
 
@@ -217,7 +123,6 @@ function returnTagListDiv(tag){
 
 
 
-
 //---------------------mimic done stuff----------------------------------
 
 /*function mimicDone(){
@@ -233,37 +138,37 @@ function returnTagListDiv(tag){
 //$(document).on("click", "#today-button", displayToday)
 
 //$(document).on("click", ".task-today-button", doToday)
-function doToday(){
+function doToday() {
     var taskid = $(this).parents(".task").attr("rel"); /*get rel attribute of parent class .task*/
     addTaskToToday(taskid);
 };
 
-function displayToday(){
+function displayToday() {
     var today = new Date(); //today
     var todayString = toDateString(today);
     var todayTasks = [];
 
-    $.each(cache,function(){
-        if(this.due_date === todayString){
+    $.each(cache, function() {
+        if(this.due_date === todayString) {
             todayTasks.push(this);
         };
     });
 
-    $(".row .col-lg-2:nth-child(2)").append(returnGenericListDiv(todayTasks,"Vandaag"));
+    $(".row .col-lg-2:nth-child(2)").append(returnGenericListDiv(todayTasks, "Vandaag"));
 };
 
 /*Returns a date string of format YYYY-MM-DD, input date object*/
-function toDateString(date){
+function toDateString(date) {
     var date = new Date(date);
     var dateString = "";
     var month, day = 0;
 
     month = date.getMonth() + 1; //Januari = 0
-    if(month < 10){
+    if(month < 10) {
         month = "0" + month;
     };
     day = date.getDate();
-    if(day < 10){
+    if(day < 10) {
         day = "0" + day;
     };
     dateString += date.getFullYear();
@@ -275,21 +180,21 @@ function toDateString(date){
     return dateString;
 };
 
-function addTaskToToday(taskid){
+function addTaskToToday(taskid) {
     var today = new Date(); /*Today*/
     var settings = {
-      "async": true,
-      "crossDomain": true,
-      "url": "https://a.wunderlist.com/api/v1/tasks/" + taskid,
-      "method": "GET",
-      "headers": headers
+        "async": true,
+        "crossDomain": true,
+        "url": "https://a.wunderlist.com/api/v1/tasks/" + taskid,
+        "method": "GET",
+        "headers": headers
     };
     var datt = {}
 
-    $.ajax(settings).success(function (response) {
+    $.ajax(settings).success(function(response) {
         datt = {
             "due_date": toDateString(today),
-            "revision" : response.revision /*get revision number from response of first ajax call*/
+            "revision": response.revision /*get revision number from response of first ajax call*/
         };
         var settings2 = {
             "async": true,
@@ -303,7 +208,7 @@ function addTaskToToday(taskid){
             contentType: 'application/json',
             "data": JSON.stringify(datt)
         };
-        $.ajax(settings2).done(function (response) {
+        $.ajax(settings2).done(function(response) {
             /*Remove this task*/
             removeTask(taskid);
 
@@ -311,14 +216,14 @@ function addTaskToToday(taskid){
             var settings3 = {
                 "async": true,
                 "crossDomain": true,
-                "url": "https://a.wunderlist.com/api/v1/tasks/"+taskid,
+                "url": "https://a.wunderlist.com/api/v1/tasks/" + taskid,
                 "method": "GET",
                 "headers": {
                     "x-access-token": "7f2375c1a0fa641564cbd45f53bd5c91c4475c61b19f6f423457b89acd5a",
                     "x-client-id": "6b6bfca8e9a100b98a48",
                 },
             };
-            $.ajax(settings3).done(function (response) {
+            $.ajax(settings3).done(function(response) {
                 cache.push(response);
             });
         });
@@ -328,21 +233,21 @@ function addTaskToToday(taskid){
 //--------------------------------------------------------------------------------
 
 //function displayLists(task){
-    /*
-    divHead = "TEST";
-    wrapid = "#schoolWrap"
+/*
+divHead = "TEST";
+wrapid = "#schoolWrap"
 
-    div =
-    "<div class=\"panel panel-default\"><div class=\"panel-heading\">"
-    +divHead+"</div><ul class=\"list-group\">"
+div =
+"<div class=\"panel panel-default\"><div class=\"panel-heading\">"
++divHead+"</div><ul class=\"list-group\">"
 
-        var task = "";
-        task += "<li rel=\""+this.id+"\" class=\"list-group-item\">"+this.title+"</li>";
-        div += task;
+    var task = "";
+    task += "<li rel=\""+this.id+"\" class=\"list-group-item\">"+this.title+"</li>";
+    div += task;
 
-    div += "</ul></div>";
-    $(wrapid).append(div)
-    */
+div += "</ul></div>";
+$(wrapid).append(div)
+*/
 //    $(".test").append(task.title)
 //    $(".test").append("<br>")
 //};
@@ -554,9 +459,9 @@ var settings = {
   }
 }
 */
-    //getLists();
-    //changeTask(1564347656,"hulahop",false,129108805)
-    /*$("body").on("click",'.task',function(){
-        changeTask($(this).attr('rel'),"tester",false,129108805);
-        alert($(this).attr('rel'))
-    });*/
+//getLists();
+//changeTask(1564347656,"hulahop",false,129108805)
+/*$("body").on("click",'.task',function(){
+    changeTask($(this).attr('rel'),"tester",false,129108805);
+    alert($(this).attr('rel'))
+});*/
