@@ -1,5 +1,5 @@
-var cache = []; /*Array with all tasks*/
-var listCache = []; /*Array with all lists*/
+var cache = []; //Array with all tasks
+var listCache = []; //Array with all lists
 
 //Global tokens
 var token = "7f2375c1a0fa641564cbd45f53bd5c91c4475c61b19f6f423457b89acd5a"
@@ -51,13 +51,14 @@ function initTasks() {
                 count++;
                 if(count === total) {
                     cache = tempCache;
-                    $.each(cache, function() {
+                    $.each(cache, function() { //add list number to teach task
                         $.extend(this, {
                             'list_number': getListNumber(this.list_id)
                         });
                     });
-                    cache.sort(sort_by('list_number'));
+                    cache.sort(sort_by('list_number', {name:'title'})); //sort by list number
                     displayLists("lists");
+                    current = cache;
                 };
             }
         });
@@ -76,13 +77,12 @@ function updateCache(changedTask) {
             'list_number': getListNumber(changedTask.list_id) //add list number
         });
         cache.push(changedTask);
-        cache.sort(sort_by('list_number')); //sort list
-
-
-    }else{
+        cache.sort(sort_by('list_number', {name:'title'})); //sort by list number //sort list
     }
+
     clearTasks();
     displayLists("lists");
+    current = cache;
 
     if(changedTask.completed === false) {
         //Select task that was changed

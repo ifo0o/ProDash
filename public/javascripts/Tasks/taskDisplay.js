@@ -39,8 +39,10 @@ function returnListDiv(type, id) {
 
     if(type === "lists") {
         $.each(cache, function() {
-            if(this.list_id === id) {
-                cont += returnTaskDiv(this, false);
+            if(this.list_id === id) { //if belongs to this list
+                cont += returnTaskDiv(this,
+                    this.due_date === toDateString(new Date()),
+                    this.starred === true);
             };
         });
     } else if(type === "subs") {
@@ -54,8 +56,15 @@ function returnListDiv(type, id) {
     return cont;
 };
 
-function returnTaskDiv(task, markLongTerm) {
-    var task = '<li class="list-group-item taskitem" rel=' + task.id + '>' + task.title + '</li>';
+function returnTaskDiv(task, markToday, markCrossed) {
+    var badge = '';
+    if(markToday) {
+        badge += '<span class="badge badge-primary">V</span>'
+    }
+    if(markCrossed) {
+        badge += '<span class="badge badge-success">X</span>'
+    }
+    var task = '<li class="list-group-item taskitem clearfix" rel=' + task.id + '>' + task.title + badge + '</li>';
     return task;
 };
 

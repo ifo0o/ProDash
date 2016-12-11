@@ -1,4 +1,5 @@
-var selTask = -1; //currently selected task
+var selTask = -1; //currently selected task on screen
+var current = []; //Array with all tasks currently on screen
 
 var main = function() {
 
@@ -10,10 +11,14 @@ var main = function() {
     //Switch list displays
     $(document).on("click", "#persubject-button", function(e) {
         clearTasks();
+        $("#persubject-button").removeClass('btn-default').addClass('btn-primary')
+        $("#permainlist-button").removeClass('btn-primary').addClass('btn-default')
         displayLists('subs');
     });
     $(document).on("click", "#permainlist-button", function(e) {
         clearTasks();
+        $("#persubject-button").removeClass('btn-primary').addClass('btn-default')
+        $("#permainlist-button").removeClass('btn-default').addClass('btn-primary')
         displayLists('lists');
     });
 
@@ -38,7 +43,6 @@ var main = function() {
     $(document).on("click", ".taskitem", function(e) {
         selectTask($(this).attr('rel'))
     });
-    //$(document).on("click", ".taskitem", function(e){modTask(this.rel,{            'completed' : true})});
 
     //Keyboard functions
     $(document).on("keydown", function(e) {
@@ -53,10 +57,8 @@ var main = function() {
         } else if(e.shiftKey && e.which == 37) { //shift+left
             moveToPrevList()
         } else if(e.altKey && e.which == 78) { //ctlr+n
-            if($("#newtask-input").is(":focus")){
-                $("#newtask-input").blur();
-            }else{
-                e.preventDefault()
+            if(!$("#newtask-input").is(":focus")){
+                e.preventDefault();
                 $("#newtask-input").focus();
             };
         } else if(e.which == 37) { //left
@@ -69,20 +71,102 @@ var main = function() {
             selectNextTask()
         } else if(e.which == 27) { //esc
             deselectTask()
-        }
+            $("#newtask-input").blur();
+        } else if(e.which == 68 && e.shiftKey){ //shift+d
+            if(!current[selTask].hasOwnProperty('due_date')){
+                doToday();
+            }else{
+                removeDate();
+            };
+        } else if(e.which == 70 && e.shiftKey){ //shift+f
+            if(!current[selTask].starred){
+                crossTask(true);
+            }else{
+                crossTask(false);
+            };
+        };
     });
 
 };
 
 $(document).ready(main);
 
+// --------------------today stuff-------------------------------------------
 
 
 
 
+//$(document).on("click", "#today-button", clearTasks)
+//$(document).on("click", "#today-button", displayToday)
+
+//$(document).on("click", ".task-today-button", doToday)
 
 
 
+
+/*
+function displayToday() {
+    var today = new Date(); //today
+    var todayString = toDateString(today);
+    var todayTasks = [];
+
+    $.each(cache, function() {
+        if(this.due_date === todayString) {
+            todayTasks.push(this);
+        };
+    });
+
+    $(".row .col-lg-2:nth-child(2)").append(returnGenericListDiv(todayTasks, "Vandaag"));
+};
+*/
+
+
+
+/*
+function addTaskToToday(taskid) {
+    var today = new Date();
+    var settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "https://a.wunderlist.com/api/v1/tasks/" + taskid,
+        "method": "GET",
+        "headers": headers
+    };
+    var datt = {}
+
+    $.ajax(settings).success(function(response) {
+        datt = {
+            "due_date": toDateString(today),
+            "revision": response.revision //get revision number from response of first ajax call
+        };
+        var settings2 = {
+            "async": true,
+            "crossDomain": true,
+            "url": "https://a.wunderlist.com/api/v1/tasks/" + taskid,
+            "method": "PATCH",
+            "headers": headers,
+            contentType: 'application/json',
+            "data": JSON.stringify(datt)
+        };
+        $.ajax(settings2).done(function(response) {
+            /*Remove this task
+            //removeTask(taskid);
+
+            //Get updated task
+            var settings3 = {
+                "async": true,
+                "crossDomain": true,
+                "url": "https://a.wunderlist.com/api/v1/tasks/" + taskid,
+                "method": "GET",
+                "headers": headers,
+            };
+            $.ajax(settings3).done(function(response) {
+                cache.push(response);
+            });
+        });
+    });
+};
+*/
 
 /*
 function displayDefault(){
@@ -133,102 +217,7 @@ function returnTagListDiv(tag){
     };
 };*/
 
-// --------------------today stuff-------------------------------------------
-//$(document).on("click", "#today-button", clearTasks)
-//$(document).on("click", "#today-button", displayToday)
 
-//$(document).on("click", ".task-today-button", doToday)
-function doToday() {
-    var taskid = $(this).parents(".task").attr("rel"); /*get rel attribute of parent class .task*/
-    addTaskToToday(taskid);
-};
-
-function displayToday() {
-    var today = new Date(); //today
-    var todayString = toDateString(today);
-    var todayTasks = [];
-
-    $.each(cache, function() {
-        if(this.due_date === todayString) {
-            todayTasks.push(this);
-        };
-    });
-
-    $(".row .col-lg-2:nth-child(2)").append(returnGenericListDiv(todayTasks, "Vandaag"));
-};
-
-/*Returns a date string of format YYYY-MM-DD, input date object*/
-function toDateString(date) {
-    var date = new Date(date);
-    var dateString = "";
-    var month, day = 0;
-
-    month = date.getMonth() + 1; //Januari = 0
-    if(month < 10) {
-        month = "0" + month;
-    };
-    day = date.getDate();
-    if(day < 10) {
-        day = "0" + day;
-    };
-    dateString += date.getFullYear();
-    dateString += "-";
-    dateString += month;
-    dateString += "-";
-    dateString += day;
-
-    return dateString;
-};
-
-function addTaskToToday(taskid) {
-    var today = new Date(); /*Today*/
-    var settings = {
-        "async": true,
-        "crossDomain": true,
-        "url": "https://a.wunderlist.com/api/v1/tasks/" + taskid,
-        "method": "GET",
-        "headers": headers
-    };
-    var datt = {}
-
-    $.ajax(settings).success(function(response) {
-        datt = {
-            "due_date": toDateString(today),
-            "revision": response.revision /*get revision number from response of first ajax call*/
-        };
-        var settings2 = {
-            "async": true,
-            "crossDomain": true,
-            "url": "https://a.wunderlist.com/api/v1/tasks/" + taskid,
-            "method": "PATCH",
-            "headers": {
-                "x-access-token": "7f2375c1a0fa641564cbd45f53bd5c91c4475c61b19f6f423457b89acd5a",
-                "x-client-id": "6b6bfca8e9a100b98a48",
-            },
-            contentType: 'application/json',
-            "data": JSON.stringify(datt)
-        };
-        $.ajax(settings2).done(function(response) {
-            /*Remove this task*/
-            removeTask(taskid);
-
-            /*Get updated task*/
-            var settings3 = {
-                "async": true,
-                "crossDomain": true,
-                "url": "https://a.wunderlist.com/api/v1/tasks/" + taskid,
-                "method": "GET",
-                "headers": {
-                    "x-access-token": "7f2375c1a0fa641564cbd45f53bd5c91c4475c61b19f6f423457b89acd5a",
-                    "x-client-id": "6b6bfca8e9a100b98a48",
-                },
-            };
-            $.ajax(settings3).done(function(response) {
-                cache.push(response);
-            });
-        });
-    });
-};
 
 //--------------------------------------------------------------------------------
 

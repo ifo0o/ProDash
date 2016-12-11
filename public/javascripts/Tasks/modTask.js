@@ -52,3 +52,26 @@ function modTask(taskid, changes) {
         });
     });
 };
+
+/*Returns a date string of format YYYY-MM-DD, input date object*/
+function toDateString(date) {
+    var date = new Date(date);
+    var dateString = "";
+    var month, day = 0;
+
+    month = date.getMonth() + 1; //Januari = 0
+    if(month < 10) {
+        month = "0" + month;
+    };
+    day = date.getDate();
+    if(day < 10) {
+        day = "0" + day;
+    };
+    dateString += date.getFullYear();
+    dateString += "-";
+    dateString += month;
+    dateString += "-";
+    dateString += day;
+
+    return dateString;
+};
