@@ -90,7 +90,7 @@ function moveToNextList() {
         //do nothing
     } else {
         var currentList = current[selTask].list_number;
-        var newlist = currentList + 1 % listcurrent.length;
+        var newlist = currentList + 1 % listCache.length;
 
         modTask(current[selTask].id, {
             "list_id": getListidByNumber(newlist)
@@ -107,7 +107,7 @@ function moveToPrevList() {
         var prevlist = currentList - 1 % listCache.length;
 
         modTask(current[selTask].id, {
-            "list_id": getListidByNumber(newlist)
+            "list_id": getListidByNumber(prevlist)
         });
 
     };

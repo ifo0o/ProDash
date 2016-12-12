@@ -28,22 +28,25 @@ html(lang='en')
     body
         .container-fluid
             .row
-                .navbar.navbar-default.navbar-fixed-top#top
+                .navbar.navbar-inverse.navbar-fixed-top
                     .container-fluid
                         .navbar-header
                             button.navbar-toggle(type='button', data-toggle='collapse', data-target='#collapse-nav')
                                 span.icon-bar
                                 span.icon-bar
                                 span.icon-bar
-                            h5 Navigatie
+                            a.navbar-brand(href='/').active
+                                span.glyphicon.glyphicon-th-list
+                            a.navbar-brand(href='/text')
+                                span.glyphicon.glyphicon-file
                         .collapse.navbar-collapse#collapse-nav  
                             ul.nav.navbar-nav
                                 li.active
                                     a(href='/')
-                                        h5 Overzicht mini
+                                        h5 Overzicht
                                 li
                                     a(href='/text')
-                                        h4 Tekst mini  
+                                        h5 Tekst
             .row
                 .col-sm-3.col-md-3.col-lg-2.sidebar
                     ul.nav.nav-sidebar

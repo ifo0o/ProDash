@@ -20,6 +20,41 @@
 }
 .navbar-fixed-top {
     display: none;
+    background-color: #434A54;
+    color:white;
+}
+
+#list{
+    font-size: 30px;
+}
+
+.navbar-header{
+    padding-left: 10px;
+}
+
+.navbar-header > a > span{
+    color: white;
+}
+.navbar-header > a.active>span{
+    color: #4A89DC
+}
+#collapse-nav > ul > li.active > a{
+    background-color: #4A89DC;
+}
+#collapse-nav > ul> li > a {
+    color: white;
+}
+
+#collapse-nav > ul> li > a:hover {
+    background-color:  #656D78;
+}
+
+#collapse-nav > ul > .active > a:hover {
+    background-color: #4A89DC;
+}
+
+#collapse-nav > ul> .active > a{
+  background-color: #4A89DC;
 }
 
 /* collapsed sidebar styles */
@@ -28,9 +63,7 @@
         display: initial;
     }
     .sidebar {
-        width: 10px;
         display: none;
-        border: 6px solid red;
     }
     #main {
         margin-top: 70px
