@@ -87,6 +87,21 @@ var main = function() {
         };
     });
 
+    //Open task modals
+    $(document).on("click", ".taskitem", function(e) {
+        $('#task-details').modal('toggle')
+        var id = $(this).attr('rel')
+        var task = getTaskObject(id)
+        $('.taskid').text(id)
+        $('.taskdescription').text(task.title)
+
+
+    });
+
+    $(document).on("click", "#done-button", function(e) {
+        alert($('.taskid').text())
+    });
+
 };
 
 $(document).ready(main);

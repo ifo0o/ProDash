@@ -38,6 +38,12 @@
 .navbar-header > a.active>span{
     color: #4A89DC
 }
+.navbar-header > a:hover>span{
+    color: #656D78;
+}
+.navbar-header > a.active:hover > span {
+    color: #4A89DC;
+}
 #collapse-nav > ul > li.active > a{
     background-color: #4A89DC;
 }
