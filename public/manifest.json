@@ -1,6 +1,5 @@
 {
   "name": "ProooDash",
   "display": "standalone",
-  "orientation": "portrait",
-  "manifest_version": 2
+  "orientation": "portrait"
 }
