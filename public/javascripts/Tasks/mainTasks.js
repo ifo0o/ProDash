@@ -3,10 +3,6 @@ var current = []; //Array with all tasks currently on screen
 
 var main = function() {
 
-    //if(window.innerWidth > 768){
-    //    $('#collapse-nav').collapse('show')
-    //}
-
     //Build cache
     $.when(initLists).done(function() {
         initTasks();
