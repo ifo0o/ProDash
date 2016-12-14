@@ -21,7 +21,11 @@ function displayLists(type) {
         } else if(type === "subs") {
             var listid = value;
         };
+        if(index === 3){
+            $("#tasks").append('<div class="clearfix visible-md-block"></div>')
+        }
         $("#tasks").append(columnarray[index] + returnListDiv(type, listid) + '</div>')
+
     });
 }
 
