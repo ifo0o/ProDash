@@ -26,6 +26,7 @@ function modTask(taskid, changes) {
         var data = {
             "revision": response.revision //get revision number from response of first ajax call
         };
+        console.log(response.revision)
         $.extend(data, changes) //add changes object values to the data to be sent
         var settings2 = {
             "async": true,

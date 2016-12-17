@@ -6,6 +6,12 @@ var main = function() {
     //Build cache
     $.when(initLists).done(function() {
         initTasks();
+        for(i = 0; i < listCache.length; i++) {
+            if(listCache[i].title !== "inbox") {
+                $('#list-choice').append('<option value="' + listCache[i].title + '">' + listCache[i].title + '</option>')
+            }
+            //$('#list-choice').append('<button class="btn btn-primary type=button">'+listCache[i].title+'</button>')
+        }
     });
 
     //Switch list displays
@@ -57,7 +63,7 @@ var main = function() {
         } else if(e.shiftKey && e.which == 37) { //shift+left
             moveToPrevList()
         } else if(e.altKey && e.which == 78) { //ctlr+n
-            if(!$("#newtask-input").is(":focus")){
+            if(!$("#newtask-input").is(":focus")) {
                 e.preventDefault();
                 $("#newtask-input").focus();
             };
@@ -72,16 +78,16 @@ var main = function() {
         } else if(e.which == 27) { //esc
             deselectTask()
             $("#newtask-input").blur();
-        } else if(e.which == 68 && e.shiftKey){ //shift+d
-            if(!current[selTask].hasOwnProperty('due_date')){
+        } else if(e.which == 68 && e.shiftKey) { //shift+d
+            if(!current[selTask].hasOwnProperty('due_date')) {
                 doToday();
-            }else{
+            } else {
                 removeDate();
             };
-        } else if(e.which == 70 && e.shiftKey){ //shift+f
-            if(!current[selTask].starred){
+        } else if(e.which == 70 && e.shiftKey) { //shift+f
+            if(!current[selTask].starred) {
                 crossTask(true);
-            }else{
+            } else {
                 crossTask(false);
             };
         };
@@ -91,15 +97,35 @@ var main = function() {
     $(document).on("click", ".taskitem", function(e) {
         $('#task-details').modal('toggle')
         var id = $(this).attr('rel')
+        console.log(id)
         var task = getTaskObject(id)
-        $('.taskid').text(id)
-        $('.taskdescription').text(task.title)
 
+        $('#task-title').val(task.title)
+        $('#list-choice').val(getListName(task.list_id))
 
-    });
+        if(task.due_date === toDateString(new Date())) {
+            $("#task-today").removeClass('btn-default').addClass('btn-primary')
+        } else {
+            $("#task-today").addClass('btn-default').removeClass('btn-primary')
+        }
 
-    $(document).on("click", "#done-button", function(e) {
-        alert($('.taskid').text())
+        if(task.starred === true) {
+            $("#task-check").removeClass('btn-default').addClass('btn-primary')
+        } else {
+            $("#task-check").addClass('btn-default').removeClass('btn-primary')
+        }
+
+        $('#task-details').off().on("click", "#done-button", function(e) {
+            modTask(id,{
+                'title' : $('#task-title').val(),
+                'list_id' : getListid($('#list-choice').val())
+            })
+            $('#task-details').modal('toggle')
+        })
+
+        $('#task-details').off().on("click", ".modal-closer", function(e) {
+            $('#task-details').modal('toggle')
+        });
     });
 
 };
