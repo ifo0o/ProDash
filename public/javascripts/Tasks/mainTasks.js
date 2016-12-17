@@ -94,10 +94,10 @@ var main = function() {
     });
 
     //Open task modals
+    /*
     $(document).on("click", ".taskitem", function(e) {
         $('#task-details').modal('toggle')
         var id = $(this).attr('rel')
-        console.log(id)
         var task = getTaskObject(id)
 
         $('#task-title').val(task.title)
@@ -115,7 +115,7 @@ var main = function() {
             $("#task-check").addClass('btn-default').removeClass('btn-primary')
         }
 
-        $('#task-details').off().on("click", "#done-button", function(e) {
+        $('#task-details').on("click", "#done-button", function(e) {
             modTask(id,{
                 'title' : $('#task-title').val(),
                 'list_id' : getListid($('#list-choice').val())
@@ -123,10 +123,78 @@ var main = function() {
             $('#task-details').modal('toggle')
         })
 
-        $('#task-details').off().on("click", ".modal-closer", function(e) {
+        $('#task-details').on("click", ".modal-closer", function(e) {
             $('#task-details').modal('toggle')
         });
     });
+*/
+    $('.modal').on('show.bs.modal', function (event) {
+        var button_task = $(event.relatedTarget)
+        var id = button_task.data('id')
+
+        var task = getTaskObject(id)
+
+        $('#task-id').text(task.id).hide()
+        $('#task-title').val(task.title)
+        $('#list-choice').val(getListName(task.list_id))
+
+        if(task.due_date === toDateString(new Date())) {
+            $("#task-today").removeClass('btn-default').addClass('btn-primary')
+        } else {
+            $("#task-today").addClass('btn-default').removeClass('btn-primary')
+        }
+
+        if(task.starred === true) {
+            $("#task-check").removeClass('btn-default').addClass('btn-primary')
+        } else {
+            $("#task-check").addClass('btn-default').removeClass('btn-primary')
+        }
+
+        console.log(id)
+
+    });
+
+    $(document).on('click', "#task-check", function(e){
+        $("#task-check").toggleClass("btn-primary")
+        $("#task-check").toggleClass("btn-default")
+    })
+    $(document).on('click', "#task-today", function(e){
+        $("#task-today").toggleClass("btn-primary")
+        $("#task-today").toggleClass("btn-default")
+    })
+
+    $('#task-details').on("click", "#done-button", function(e) {
+
+        if($('#task-today').hasClass('btn-primary')){
+            date = new Date()
+        }else{
+            date = ''
+        }
+
+        modTask($('#task-id').text(),{
+            'title' : $('#task-title').val(),
+            'list_id' : getListid($('#list-choice').val()),
+            'starred' : $('#task-check').hasClass('btn-primary'),
+            'due_date' : date,
+            'completed' : true
+        })
+        $('#task-details').modal('toggle')
+    })
+    $('#task-details').on("click", "#send-button", function(e) {
+        if($('#task-today').hasClass('btn-primary')){
+            date = new Date()
+        }else{
+            date = ''
+        }
+        console.log(date)
+        modTask($('#task-id').text(),{
+            'title' : $('#task-title').val(),
+            'list_id' : getListid($('#list-choice').val()),
+            'starred' : $('#task-check').hasClass('btn-primary'),
+            'due_date' : date,
+        })
+        $('#task-details').modal('toggle')
+    })
 
 };
 

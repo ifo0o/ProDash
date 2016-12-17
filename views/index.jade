@@ -78,6 +78,7 @@ html(lang='en')
                                 span(aria-hidden='true') ×
                             h4.modal-title Details
                         .modal-body
+                            p#task-id
                             .row
                                 .col-xs-12
                                     .form-group
@@ -87,8 +88,18 @@ html(lang='en')
                                     select#list-choice.form-control(name='list-choice')
                                 .col-xs-6
                                     .btn-group(role='group')
-                                        button.btn.btn-default#task-check(type='button') Check
-                                        button.btn.btn-default#task-today(type='button') Vandaag    
+                                        button.btn.btn-default#task-check(type='button') 
+                                            span.glyphicon.glyphicon-check
+                                        button.btn.btn-default#task-today(type='button')
+                                            span.glyphicon.glyphicon-arrow-down
+                                            
                         .modal-footer
-                            button.btn.btn-default.modal-closer(type='button', data-dismiss='task-details') Close
-                            button.btn.btn-success(type='button')#done-button Mark as done
+                            .row
+                                .col-xs-6
+                                    button.btn.btn-success(type='button')#done-button
+                                        span.glyphicon.glyphicon-ok
+                                .col-xs-6
+                                    button.btn.btn-default.modal-closer(type='button', data-dismiss='modal')
+                                        span.glyphicon.glyphicon-remove
+                                    button.btn.btn-primary(type='button')#send-button
+                                        span.glyphicon.glyphicon-send

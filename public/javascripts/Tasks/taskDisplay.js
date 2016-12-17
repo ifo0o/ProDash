@@ -68,7 +68,7 @@ function returnTaskDiv(task, markToday, markCrossed) {
     if(markCrossed) {
         badge += '<span class="badge badge-success">X</span>'
     }
-    var task = '<li class="list-group-item taskitem clearfix" rel=' + task.id + '>' + task.title + badge + '</li>';
+    var task = '<li class="list-group-item taskitem clearfix" data-toggle="modal" data-target="#task-details" data-id="'+task.id+'" rel=' + task.id + '>' + task.title + badge + '</li>';
     return task;
 };
 

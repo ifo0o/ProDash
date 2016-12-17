@@ -40,3 +40,7 @@ li:hover{
 .selected:hover{
     background-color: #E6E9ED
 }
+
+#done-button{
+    float: left;
+}
