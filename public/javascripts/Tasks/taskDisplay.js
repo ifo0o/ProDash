@@ -52,7 +52,9 @@ function returnListDiv(type, id) {
     } else if(type === "subs") {
         $.each(cache, function() {
             if(this.title.substring(0, 3) === id) {
-                cont += returnTaskDiv(this, true);
+                cont += returnTaskDiv(this,
+                    this.due_date === toDateString(new Date()),
+                    this.starred === true);
             };
         });
     };
@@ -63,10 +65,10 @@ function returnListDiv(type, id) {
 function returnTaskDiv(task, markToday, markCrossed) {
     var badge = '';
     if(markToday) {
-        badge += '<span class="badge badge-primary">V</span>'
+        badge += '<span class="badge badge-primary"><span class="glyphicon glyphicon-arrow-down"></span></span>'
     }
     if(markCrossed) {
-        badge += '<span class="badge badge-success">X</span>'
+        badge += '<span class="badge badge-success"><span class="glyphicon glyphicon-check"></span></span>'
     }
     var task = '<li class="list-group-item taskitem clearfix" data-toggle="modal" data-target="#task-details" data-id="'+task.id+'" rel=' + task.id + '>' + task.title + badge + '</li>';
     return task;
