@@ -50,6 +50,7 @@ var main = function() {
             "title": $("#newtask-input").val()
         });
         $("#newtask-input").val("");
+        $("#newtask-input").blur();
     });
 
     //Selecting tasks
@@ -69,7 +70,7 @@ var main = function() {
             moveToNextList()
         } else if(e.shiftKey && e.which == 37) { //shift+left
             moveToPrevList()
-        } else if(e.altKey && e.which == 78) { //ctlr+n
+        } else if(e.shiftKey && e.which == 78) { //ctlr+n
             if(!$("#newtask-input").is(":focus")) {
                 e.preventDefault();
                 $("#newtask-input").focus();
