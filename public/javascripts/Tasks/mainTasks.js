@@ -1,5 +1,6 @@
 var selTask = -1; //currently selected task on screen
 var current = []; //Array with all tasks currently on screen
+var view = "lists" //current view
 
 var main = function() {
 
@@ -19,12 +20,18 @@ var main = function() {
         clearTasks();
         $("#persubject-button").removeClass('btn-default').addClass('btn-primary')
         $("#permainlist-button").removeClass('btn-primary').addClass('btn-default')
+        view = 'subs'
+        currentSwitch('subs')
+        selTask = -1;
         displayLists('subs');
     });
     $(document).on("click", "#permainlist-button", function(e) {
         clearTasks();
         $("#persubject-button").removeClass('btn-primary').addClass('btn-default')
         $("#permainlist-button").removeClass('btn-default').addClass('btn-primary')
+        view = 'lists'
+        currentSwitch('lists')
+            selTask = -1;
         displayLists('lists');
     });
 
@@ -200,6 +207,25 @@ var main = function() {
 
 $(document).ready(main);
 
+
+function currentSwitch(v){
+    var newCur = [];
+
+    if(v === 'lists'){
+        newCur = cache;
+    }else if(v === 'subs'){
+        var listnames = ["STO", "STA", "PRO"];
+        $.each(listnames, function(index, value) {
+            $.each(cache, function() {
+                if(this.title.substring(0, 3) === value) {
+                    newCur.push(this)
+                };
+            });
+        });
+    }
+
+    current = newCur;
+}
 // --------------------today stuff-------------------------------------------
 
 

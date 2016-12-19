@@ -81,7 +81,7 @@ function updateCache(changedTask) {
     }
 
     clearTasks();
-    displayLists("lists");
+    displayLists(view);
     current = cache;
 
     if(changedTask.completed === false) {
