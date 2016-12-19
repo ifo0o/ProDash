@@ -15,7 +15,7 @@ html(lang='en')
         link(href='stylesheets/bootflat/css/bootflat.css', rel='stylesheet')
         // Custom stylesheets
         link(href='stylesheets/sidebar_stylesheet.css', rel='stylesheet')
-        link(href='stylesheets/tasks_stylesheet.css', rel='stylesheet')
+        link(href='stylesheets/tex_stylesheet.css', rel='stylesheet')
         // Load jQuery Library
         script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
         script(type='text/javascript', src='stylesheets/bootstrap-3.3.5-dist/js/bootstrap.min.js')
@@ -54,5 +54,8 @@ html(lang='en')
                                 h4 Tekst   
             .row#main
                 .col-sm-9.col-sm-offset-3.col-md-9.col-md-offset-3.col-lg-5.col-lg-offset-2
-                    textarea.form-control#tex(rows='15')
-                    button.btn.btn-primary.btn-block#sendtex(type='button') Send
+                    .well#tex-container-well
+                        textarea.form-control#tex(rows='25')
+                        div.btn.btn-primary#sendtex(type='button')
+                            span.glyphicon.glyphicon-send
+                        //span#status-container
