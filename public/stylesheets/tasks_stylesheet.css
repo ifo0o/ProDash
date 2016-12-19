@@ -24,7 +24,10 @@
 .task .panel-body{
     padding-right: 0px;
 }*/
-
+.special-badge{
+    padding: 0px;
+    background-color: inherit;
+}
 .input-group{
     margin-bottom: 10px;
 }
