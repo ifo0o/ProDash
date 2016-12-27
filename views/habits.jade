@@ -3,28 +3,28 @@ extends default
 block stylesheets
     // Custom stylesheets
     link(href='stylesheets/sidebar_stylesheet.css', rel='stylesheet')
-    link(href='stylesheets/tex_stylesheet.css', rel='stylesheet')
+    link(href='stylesheets/habits_stylesheet.css', rel='stylesheet')
     
 block javascripts
     // Load custom JavaScript
-    script(type='text/javascript', src='javascripts/Tex/mainTex.js')
+    script(type='text/javascript', src='javascripts/Habits/mainHabits.js')
     
 block navigation-head
     a.navbar-brand(href='/')
         span.glyphicon.glyphicon-th-list
-    a.navbar-brand(href='/text').active
+    a.navbar-brand(href='/text')
         span.glyphicon.glyphicon-file
-    a.navbar-brand(href='/habits')
+    a.navbar-brand(href='/habits').active
         span.glyphicon.glyphicon-repeat
         
 block navigation-drop
     li
         a(href='/')
             h5 Overzicht
-    li.active
+    li
         a(href='/text')
             h5 Tekst
-    li
+    li.active
         a(href='/habits')
             h5 Habits       
 
@@ -33,17 +33,17 @@ block navigation-sidebar
         li
             a(href='/')
                 h5 Overzicht
-        li.active
+        li
             a(href='/text')
                 h4 Tekst
-        li
+        li.active
             a(href='/habits')
                 h5 Habits 
 
 block content
     .row#main
-        .col-sm-9.col-sm-offset-3.col-md-9.col-md-offset-3.col-lg-5.col-lg-offset-2
-            .well#tex-container-well
-                textarea.form-control#tex(rows='25')
-                div.btn.btn-primary#sendtex(type='button')
-                    span.glyphicon.glyphicon-send
+        //.col-sm-9.col-sm-offset-3.col-md-9.col-md-offset-3.col-lg-5.col-lg-offset-2
+        //    .thumbnail                
+        //        .caption
+        //            h3 Sporten
+        //            a.btn.btn-primary Gedaan      

@@ -10,7 +10,8 @@ var monk = require('monk');
 var db = monk('mongodb://admin:admin@ds129028.mlab.com:29028/producdash');
 
 var routes = require('./routes/index');
-var tex = require('./routes/tex');
+var tex = require('./routes/text');
+var habits = require('./routes/habits');
 
 var app = express();
 
@@ -33,7 +34,8 @@ app.use(function(req,res,next){
 });
 
 app.use('/', routes);
-app.use('/tex', tex);
+app.use('/text', tex);
+app.use('/habits', habits);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

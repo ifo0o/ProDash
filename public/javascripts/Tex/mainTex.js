@@ -1,5 +1,5 @@
 var main = function() {
-    $.getJSON("/tex", function(data) {
+    $.getJSON("/text/tex", function(data) {
         $('#tex').val(data[0].tex)
     });
 
