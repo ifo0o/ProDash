@@ -101,41 +101,6 @@ var main = function() {
         };
     });
 
-    //Open task modals
-    /*
-    $(document).on("click", ".taskitem", function(e) {
-        $('#task-details').modal('toggle')
-        var id = $(this).attr('rel')
-        var task = getTaskObject(id)
-
-        $('#task-title').val(task.title)
-        $('#list-choice').val(getListName(task.list_id))
-
-        if(task.due_date === toDateString(new Date())) {
-            $("#task-today").removeClass('btn-default').addClass('btn-primary')
-        } else {
-            $("#task-today").addClass('btn-default').removeClass('btn-primary')
-        }
-
-        if(task.starred === true) {
-            $("#task-check").removeClass('btn-default').addClass('btn-primary')
-        } else {
-            $("#task-check").addClass('btn-default').removeClass('btn-primary')
-        }
-
-        $('#task-details').on("click", "#done-button", function(e) {
-            modTask(id,{
-                'title' : $('#task-title').val(),
-                'list_id' : getListid($('#list-choice').val())
-            })
-            $('#task-details').modal('toggle')
-        })
-
-        $('#task-details').on("click", ".modal-closer", function(e) {
-            $('#task-details').modal('toggle')
-        });
-    });
-*/
     $('.modal').on('show.bs.modal', function (event) {
         var button_task = $(event.relatedTarget)
         var id = button_task.data('id')
@@ -157,9 +122,6 @@ var main = function() {
         } else {
             $("#task-check").addClass('btn-default').removeClass('btn-primary')
         }
-
-        console.log(id)
-
     });
 
     $(document).on('click', "#task-check", function(e){

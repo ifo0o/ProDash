@@ -1,106 +1,87 @@
-doctype html
-html(lang='en')
-    head
-        meta(charset='utf-8')
-        meta(http-equiv='X-UA-Compatible', content='IE=edge')
-        meta(name='viewport', content='width=device-width, initial-scale=1')
-        // The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags
-        meta(name='description', content='')
-        meta(name='author', content='')
-        link(rel='manifest', href='manifest.json')
-        title ProducDash
-        // Bootstrap core CSS
-        link(href='stylesheets/bootstrap-3.3.5-dist/css/bootstrap.min.css', rel='stylesheet')
-        // Bootflat theme
-        link(href='stylesheets/bootflat/css/bootflat.css', rel='stylesheet')
-        // Custom stylesheets
-        link(href='stylesheets/sidebar_stylesheet.css', rel='stylesheet')
-        link(href='stylesheets/tasks_stylesheet.css', rel='stylesheet')
-        // Load jQuery Library
-        script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js')
-        script(type='text/javascript', src='stylesheets/bootstrap-3.3.5-dist/js/bootstrap.min.js')
-        // Load custom JavaScript
-        script(type='text/javascript', src='javascripts/Tasks/mainTasks.js')
-        script(type='text/javascript', src='javascripts/Tasks/cache.js')
-        script(type='text/javascript', src='javascripts/Tasks/taskDisplay.js')
-        script(type='text/javascript', src='javascripts/Tasks/modTask.js')
-        script(type='text/javascript', src='javascripts/Tasks/helperTasks.js')
-        script(type='text/javascript', src='javascripts/Tasks/selectTasks.js')        
-    body
-        .container-fluid
-            .row
-                .navbar.navbar-inverse.navbar-fixed-top
-                    .container-fluid
-                        .navbar-header
-                            button.navbar-toggle(type='button', data-toggle='collapse', data-target='#collapse-nav')
-                                span.icon-bar
-                                span.icon-bar
-                                span.icon-bar
-                            a.navbar-brand(href='/').active
-                                span.glyphicon.glyphicon-th-list
-                            a.navbar-brand(href='/text')
-                                span.glyphicon.glyphicon-file
-                        .collapse.navbar-collapse#collapse-nav  
-                            ul.nav.navbar-nav
-                                li.active
-                                    a(href='/')
-                                        h5 Overzicht
-                                li
-                                    a(href='/text')
-                                        h5 Tekst
-            .row
-                .col-sm-3.col-md-3.col-lg-2.sidebar
-                    ul.nav.nav-sidebar
-                        li.active
-                            a(href='/')
-                                h5 Overzicht
-                        li
-                            a(href='/text')
-                                h4 Tekst
-            .row#main
-                .col-sm-9.col-sm-offset-3.col-md-9.col-md-offset-3.col-lg-5.col-lg-offset-2
-                    .well
-                        form#newtask
-                            .input-group
-                                input#newtask-input.form-control(type='text', placeholder='Nieuwe Todo')
-                                span.input-group-btn
-                                    #newtask-button.btn.btn-primary(type='button') 
-                                        span.glyphicon.glyphicon-plus
-                        .btn-group(role='group')
-                            button#permainlist-button.btn.btn-primary(type='button') Per lijst
-                            button#persubject-button.btn.btn-default(type='button') Per vak
-            // todo's
-            #tasks.row
-            .modal.fade#task-details(tabindex='-1', role='dialog')
-                .modal-dialog(role='document')
-                    .modal-content
-                        .modal-header
-                            button.close.modal-closer(type='button', data-dismiss='modal', aria-label='Close')
-                                span(aria-hidden='true') ×
-                            h4.modal-title Details
-                        .modal-body
-                            p#task-id
-                            .row
-                                .col-xs-12
-                                    .form-group
-                                        input.form-control#task-title
-                            .row
-                                .col-xs-6        
-                                    select#list-choice.form-control(name='list-choice')
-                                .col-xs-6
-                                    .btn-group(role='group')
-                                        button.btn.btn-default#task-check(type='button') 
-                                            span.glyphicon.glyphicon-ok
-                                        button.btn.btn-default#task-today(type='button')
-                                            span.glyphicon.glyphicon-arrow-down
-                                            
-                        .modal-footer
-                            .row
-                                .col-xs-6
-                                    button.btn.btn-success(type='button')#done-button
-                                        span.glyphicon.glyphicon-check
-                                .col-xs-6
-                                    button.btn.btn-default.modal-closer(type='button', data-dismiss='modal')
-                                        span.glyphicon.glyphicon-remove
-                                    button.btn.btn-primary(type='button')#send-button
-                                        span.glyphicon.glyphicon-send
+extends default
+
+block stylesheets
+    // Custom stylesheets
+    link(href='stylesheets/sidebar_stylesheet.css', rel='stylesheet')
+    link(href='stylesheets/tasks_stylesheet.css', rel='stylesheet')
+    
+block javascripts
+    // Load custom JavaScript
+    script(type='text/javascript', src='javascripts/Tasks/mainTasks.js')
+    script(type='text/javascript', src='javascripts/Tasks/cache.js')
+    script(type='text/javascript', src='javascripts/Tasks/taskDisplay.js')
+    script(type='text/javascript', src='javascripts/Tasks/modTask.js')
+    script(type='text/javascript', src='javascripts/Tasks/helperTasks.js')
+    script(type='text/javascript', src='javascripts/Tasks/selectTasks.js')
+    
+block navigation-head
+    a.navbar-brand(href='/').active
+        span.glyphicon.glyphicon-th-list
+    a.navbar-brand(href='/text')
+        span.glyphicon.glyphicon-file
+        
+block navigation-drop
+    li.active
+        a(href='/')
+            h5 Overzicht
+    li
+        a(href='/text')
+            h5 Tekst
+
+block navigation-sidebar
+    ul.nav.nav-sidebar
+        li.active
+            a(href='/')
+                h5 Overzicht
+        li
+            a(href='/text')
+                h4 Tekst
+
+block content
+    .row#main
+        .col-sm-9.col-sm-offset-3.col-md-9.col-md-offset-3.col-lg-5.col-lg-offset-2
+            .well
+                form#newtask
+                    .input-group
+                        input#newtask-input.form-control(type='text', placeholder='Nieuwe Todo')
+                        span.input-group-btn
+                            #newtask-button.btn.btn-primary(type='button') 
+                                span.glyphicon.glyphicon-plus
+                .btn-group(role='group')
+                    button#permainlist-button.btn.btn-primary(type='button') Per lijst
+                    button#persubject-button.btn.btn-default(type='button') Per vak
+    // todo's
+    #tasks.row
+    .modal.fade#task-details(tabindex='-1', role='dialog')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    button.close.modal-closer(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true') ×
+                    h4.modal-title Details
+                .modal-body
+                    p#task-id
+                    .row
+                        .col-xs-12
+                            .form-group
+                                input.form-control#task-title
+                    .row
+                        .col-xs-6        
+                            select#list-choice.form-control(name='list-choice')
+                        .col-xs-6
+                            .btn-group(role='group')
+                                button.btn.btn-default#task-check(type='button') 
+                                    span.glyphicon.glyphicon-ok
+                                button.btn.btn-default#task-today(type='button')
+                                    span.glyphicon.glyphicon-arrow-down
+                                    
+                .modal-footer
+                    .row
+                        .col-xs-6
+                            button.btn.btn-success(type='button')#done-button
+                                span.glyphicon.glyphicon-check
+                        .col-xs-6
+                            button.btn.btn-default.modal-closer(type='button', data-dismiss='modal')
+                                span.glyphicon.glyphicon-remove
+                            button.btn.btn-primary(type='button')#send-button
+                                span.glyphicon.glyphicon-send

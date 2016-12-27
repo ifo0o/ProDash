@@ -1,0 +1,44 @@
+doctype html
+html
+    head
+        // Meta tags
+        meta(charset='utf-8')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge')
+        meta(name='viewport', content='width=device-width, initial-scale=1')
+        // The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags
+        meta(name='description', content='')
+        meta(name='author', content='')
+        link(rel='manifest', href='manifest.json')
+        
+        title ProducDash
+
+        // Bootstrap core CSS
+        link(href='stylesheets/bootstrap-3.3.5-dist/css/bootstrap.min.css', rel='stylesheet')
+        // Bootflat theme
+        link(href='stylesheets/bootflat/css/bootflat.css', rel='stylesheet')
+        
+        block stylesheets
+        
+        // Load jQuery Library
+        script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js')
+        script(type='text/javascript', src='stylesheets/bootstrap-3.3.5-dist/js/bootstrap.min.js')
+        
+    body
+        .container-fluid
+            .row
+                .navbar.navbar-inverse.navbar-fixed-top
+                    .container-fluid
+                        .navbar-header
+                            button.navbar-toggle(type='button', data-toggle='collapse', data-target='#collapse-nav')
+                                span.icon-bar
+                                span.icon-bar
+                                span.icon-bar
+                            block navigation-head
+                        .collapse.navbar-collapse#collapse-nav  
+                            ul.nav.navbar-nav
+                                block navigation-drop
+            .row
+                .col-sm-3.col-md-3.col-lg-2.sidebar
+                    block navigation-sidebar
+            block content
+            block javascripts  
