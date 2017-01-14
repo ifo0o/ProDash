@@ -42,8 +42,18 @@ block navigation-sidebar
 
 block content
     .row#main
-        //.col-sm-9.col-sm-offset-3.col-md-9.col-md-offset-3.col-lg-5.col-lg-offset-2
-        //    .thumbnail                
-        //        .caption
-        //            h3 Sporten
-        //            a.btn.btn-primary Gedaan      
+    .modal.fade#habit-details(tabindex='-1', role='dialog')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    button.close.modal-closer(type='button', data-dismiss='modal', aria-label='Close')
+                        span(aria-hidden='true') ×
+                    h4.modal-title Details
+                .modal-body
+                    
+                .modal-footer
+                    .row
+                        .col-xs-12
+                            button.btn.btn-danger.btn-undo-today(data-dismiss='modal') Undo Today
+                            button.btn.btn-default.modal-closer(type='button', data-dismiss='modal')
+                                span.glyphicon.glyphicon-remove

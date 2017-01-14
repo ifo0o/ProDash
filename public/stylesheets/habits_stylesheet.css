@@ -4,14 +4,23 @@
     font-weight: bold;
     color: white;
     float: right;
-    width: 30px;
+    width: 35px;
     border-radius: 50%;
-    height: 30px;
+    height: 35px;
+    font-size: 20px;
     align-items: center; /* Vertical center alignment */
     justify-content: center; /* Horizontal center alignment */
+}
+
+.streak-not-today{
+    background-color: grey;
 }
 
 .btn-done{
     padding-left: 25px;
     padding-right: 25px;
+}
+
+.btn-done-not-today{
+    background-color: grey;
 }

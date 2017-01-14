@@ -8,18 +8,7 @@ router.get('/', function(req, res, next) {
     });
 });
 
-/*
- * GET habits without streaks
- */
- /*
-router.get('/h', function(req, res) {
-    var db = req.db;
-    var collection = db.get('habits');
-    collection.find({}, {}, function(e, docs) {
-        res.json(docs);
-    });
-});
-*/
+
 
 /*
  * GET habits including streaks
@@ -33,9 +22,9 @@ router.get('/h', function(req, res) {
             for(var i = 0; i < docs[j].days.length; i++) {
                 docs[j].days[i] = new Date(docs[j].days[i]);
             };
-            //console.log(docs[j])
-            //console.log(streak(docs[j].days))
-            docs[j].streak = streak(docs[j].days);
+            var streakinfo = current_upto_today_streak(docs[j].days);
+            docs[j].streak = streakinfo[0];
+            docs[j].doneToday = streakinfo[1];
         }
         res.json(docs);
     });
@@ -75,20 +64,51 @@ router.put('/date', function(req, res) {
 });
 
 /*
+ * PUT to remove a date.
+ mongo ds129028.mlab.com:29028/producdash -u admin -p admin
+ */
+router.put('/removedate', function(req, res) {
+    var db = req.db;
+    var collection = db.get("habits");
+
+    date = new Date(req.body.date)
+    console.log(date)
+    date.setSeconds(0)
+    date.setMinutes(0)
+    date.setHours(0)
+    date.setMilliseconds(0)
+
+    collection.update({
+        '_id': req.body._id
+    }, {
+        "$pull": {
+            "days": date
+        }
+    }, function(err, result) {
+        res.send(
+            (err === null) ? {
+                msg: ''
+            } : {
+                msg: err
+            }
+        );
+        console.log(err)
+    });
+});
+
+/*
 PUT add today to habit if not already done
 */
 router.put('/today', function(req, res) {
     var db = req.db;
     var collection = db.get("habits");
 
-    var today = new Date()
-    today.setSeconds(0)
-    today.setMinutes(0)
-    today.setHours(0)
-    today.setMilliseconds(0)
-    console.log(today)
+    var today = new Date();
+    today.setSeconds(0);
+    today.setMinutes(0);
+    today.setHours(0);
+    today.setMilliseconds(0);
 
-    console.log(req.body)
     collection.update({
         '_id': req.body._id
     }, {
@@ -108,15 +128,47 @@ router.put('/today', function(req, res) {
 });
 
 
+
 //Helper functions to calculate streaks
-function streak(d) {
-    s = 0;
-    while(consecutive(latestDay(d), nextLatestDay(d))) {
-        s++;
-        d = removeLatestDay(d);
-    }
-    s++; // since counted the consecutive links, consective days = ++;
-    return s;
+function current_upto_today_streak(d) {
+    var s = 0;
+
+    var yesterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+    yesterday.setSeconds(0);
+    yesterday.setHours(0);
+    yesterday.setMinutes(0);
+    yesterday.setMilliseconds(0);
+
+    var today = new Date();
+    today.setSeconds(0);
+    today.setHours(0);
+    today.setMinutes(0);
+    today.setMilliseconds(0);
+    var yesterdayDone = false;
+    var todayDone = false;
+
+    for(var i = 0; i < d.length; i++) {
+        if(d[i].getTime() == yesterday.getTime()) {
+            yesterdayDone = true;
+        };
+    };
+    for(var i = 0; i < d.length; i++) {
+        if(d[i].getTime() == today.getTime()) {
+            todayDone = true;
+        };
+    };
+
+    //if habit is not done today or yesterday, then streak is zero
+    if(yesterdayDone || todayDone){
+        while(consecutive(latestDay(d), nextLatestDay(d))) {
+            s++;
+            d = removeLatestDay(d);
+        };
+        s++; // since counted the consecutive links, consective days = ++;
+    };
+
+    var res = [s,todayDone]; //results including if needs to be done today
+    return res;
 };
 
 function removeLatestDay(d) {
@@ -141,5 +193,37 @@ function consecutive(latest, former) {
         return false;
     };
 };
+
+/* Not used at the moment
+function current_real_streak(d) {
+    var today = new Date();
+    today.setSeconds(0);
+    today.setHours(0)
+    today.setMinutes(0)
+    today.setMilliseconds(0)
+    s = 0;
+
+    for(var i = 0; i < d.length; i++) {
+        if(d[i].getTime() == today.getTime()) {
+            while(consecutive(latestDay(d), nextLatestDay(d))) {
+                s++;
+                d = removeLatestDay(d);
+            };
+            s++; // since counted the consecutive links, consective days = ++;
+        };
+    };
+    return s;
+};
+
+//get habits without streaks
+router.get('/h', function(req, res) {
+    var db = req.db;
+    var collection = db.get('habits');
+    collection.find({}, {}, function(e, docs) {
+        res.json(docs);
+    });
+});
+
+*/
 
 module.exports = router;
