@@ -24,3 +24,8 @@
 .btn-done-not-today{
     background-color: grey;
 }
+.progress{
+    width: 100%;
+    margin-bottom: 0px;
+    margin-top: 10px;
+}

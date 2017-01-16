@@ -2,49 +2,58 @@ var main = function() {
     rebuildhabits();
 
     $(document).on("click", ".btn-done", function(e) {
-        var rel = $(this).attr('rel');
-        $.ajax({
-            type: 'PUT',
-            data: {
-                '_id': $(this).attr('rel')
-            },
-            url: '/habits/today'
-        }).done(function(response) {
-            if(!$('.btn-done[rel="'+rel+'"]').hasClass('btn-success')){ //only increment streak if actually not already incremented today
-                $('.btn-done[rel="'+rel+'"]').removeClass('btn-default').addClass('btn-success');
-                $('.streak[rel="'+rel+'"]').removeClass('streak-not-today');
-                var streaknew = parseInt($('[rel="'+rel+'"]').text()) + 1;
-                $('.streak[rel="'+rel+'"]').text(streaknew);
-            };
-        });
+        sendDoneToday(this);
     });
 
     $(document).on("click", ".btn-edit", function(e) {
-        $('#habit-details').modal('toggle')
+        $('#habit-details').modal('toggle');
         $('.btn-undo-today').attr('rel',$(this).attr('rel'));
-        console.log($(this).attr('rel'))
     });
 
     $(document).on("click", ".btn-undo-today", function(e) {
-        var today = new Date();
-        var rel = $(this).attr('rel');
-        $.ajax({
-            type: 'PUT',
-            data: {
-                '_id' : rel,
-                'date': today
-            },
-            url: '/habits/removedate'
-        }).done(function(response) {
-        });
-    });
-
-    $('.modal').on('show.bs.modal', function (event) {
-
+        removeDoneToday(this)
     });
 };
 
 $(document).ready(main);
+
+function sendDoneToday(e){
+    var rel = $(e).attr('rel');
+    $.ajax({
+        type: 'PUT',
+        data: {
+            '_id': rel
+        },
+        url: '/habits/today'
+    }).done(function(response) {
+        if(!$('.btn-done[rel="'+rel+'"]').hasClass('btn-success')){ //only increment streak if actually not already incremented today
+            $('.btn-done[rel="'+rel+'"]').removeClass('btn-default').addClass('btn-success');
+            $('.streak[rel="'+rel+'"]').removeClass('streak-not-today');
+            var streaknew = parseInt($('[rel="'+rel+'"]').text()) + 1;
+            $('.streak[rel="'+rel+'"]').text(streaknew);
+        };
+    });
+};
+
+function removeDoneToday(e){
+    var today = new Date();
+    var rel = $(e).attr('rel');
+    $.ajax({
+        type: 'PUT',
+        data: {
+            '_id' : rel,
+            'date': today
+        },
+        url: '/habits/removedate'
+    }).done(function(response) {
+        if($('.btn-done[rel="'+rel+'"]').hasClass('btn-success')){ //only decrement streak if actually not already decremented today
+            $('.btn-done[rel="'+rel+'"]').addClass('btn-default').removeClass('btn-success');
+            $('.streak[rel="'+rel+'"]').addClass('streak-not-today');
+            var streaknew = parseInt($('[rel="'+rel+'"]').text()) - 1;
+            $('.streak[rel="'+rel+'"]').text(streaknew);
+        };
+    });
+};
 
 function rebuildhabits(){
     $("#main").children().remove();
@@ -76,9 +85,11 @@ function rebuildhabits(){
                     '<a rel=' + this._id + ' class="btn btn-default btn-edit"><span class="glyphicon glyphicon-pencil"></span></a>' +
                     '</div>'
             }
+            var progressLength = (this.streak/20)*100
+            var progressbar = '<div class="progress"><div class="progress-bar progress-bar-success" style="width:'+progressLength+'%"</div></div>'
             $("#main").append(columnarray[index] + unit + this.name +
                 '</h1>' + button + streak +
-                '</div></div></div>')
+                progressbar+'</div></div></div>')
         });
     });
 };
