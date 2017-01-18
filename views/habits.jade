@@ -50,10 +50,17 @@ block content
                         span(aria-hidden='true') ×
                     h4.modal-title Details
                 .modal-body
-                    
+                    .row   
+                        .col-xs-12
+                            .input-group
+                                input.form-control(type='date')#add-date-form
+                                span.input-group-btn
+                                    #btn-add-date.btn.btn-primary(type='button') 
+                                        span.glyphicon.glyphicon-plus
+                            select#date-remove-choice.form-control(name='list-choice')            
                 .modal-footer
                     .row
                         .col-xs-12
-                            button.btn.btn-danger.btn-undo-today(data-dismiss='modal') Undo Today
+                            button.btn.btn-danger#btn-undo-today(data-dismiss='modal') Undo Today
                             button.btn.btn-default.modal-closer(type='button', data-dismiss='modal')
                                 span.glyphicon.glyphicon-remove
