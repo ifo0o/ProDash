@@ -107,6 +107,7 @@ router.put('/today', function(req, res) {
 
     var today = new Date();
     today.setHours(13, 0, 0, 0);
+    console.log(today)
 
     collection.update({
         '_id': req.body._id
@@ -144,6 +145,8 @@ function current_upto_today_streak(d) {
     //today.setMilliseconds(0);
     var yesterdayDone = false;
     var todayDone = false;
+    console.log(today)
+    console.log(yesterday)
 
     for(var i = 0; i < d.length; i++) {
         if(d[i].getTime() == yesterday.getTime()) {
