@@ -1,21 +1,55 @@
+cache = [];
+
 var main = function() {
     rebuildhabits();
+
+
 
     $(document).on("click", ".btn-done", function(e) {
         sendDoneToday(this);
     });
 
     $(document).on("click", ".btn-edit", function(e) {
+        var rel = $(this).attr('rel')
         $('#habit-details').modal('toggle');
-        $('.btn-undo-today').attr('rel',$(this).attr('rel'));
+        console.log(rel)
+        $.each(cache, function(index,value){
+            if(value._id === rel){
+                var lastdays = value.days.slice(1,10);
+                console.log(lastdays)
+                //$('#date-remove-choice').append('<option value="' + listCache[i].title + '">' + listCache[i].title + '</option>')
+            };
+        });
+        $('#btn-undo-today').attr('rel',$(this).attr('rel'));
+        $('#btn-add-date').attr('rel',$(this).attr('rel'));
     });
 
-    $(document).on("click", ".btn-undo-today", function(e) {
+    $(document).on("click", "#btn-undo-today", function(e) {
         removeDoneToday(this)
     });
+    $(document).on("click", "#btn-add-date", function(e) {
+        sendDoneDate(this)
+    });
+
 };
 
 $(document).ready(main);
+
+function sendDoneDate(e){
+    var rel = $(e).attr('rel');
+    console.log("call")
+    console.log($('#add-date-form').val());
+    $.ajax({
+        type: 'PUT',
+        data: {
+            '_id': rel,
+            'date':$('#add-date-form').val()
+        },
+        url: '/habits/date'
+    }).done(function(response) {
+
+    });
+}
 
 function sendDoneToday(e){
     var rel = $(e).attr('rel');
@@ -72,6 +106,8 @@ function rebuildhabits(){
 
     $.getJSON("/habits/h", function(data) {
         $.each(data, function(index) {
+            cache = data;
+
             if(this.doneToday){
                 var streak = '<div rel='+this._id+' class="streak">' + this.streak + '</div>'
                 var button = '<div class="btn-group">' +
@@ -85,6 +121,7 @@ function rebuildhabits(){
                     '<a rel=' + this._id + ' class="btn btn-default btn-edit"><span class="glyphicon glyphicon-pencil"></span></a>' +
                     '</div>'
             }
+            console.log(this)
             var progressLength = (this.streak/20)*100
             var progressbar = '<div class="progress"><div class="progress-bar progress-bar-success" style="width:'+progressLength+'%"</div></div>'
             $("#main").append(columnarray[index] + unit + this.name +

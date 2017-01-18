@@ -13,7 +13,7 @@ var main = function() {
         $.ajax({
           type: 'PUT',
           data: d,
-          url: '/tex/mod',
+          url: '/text/mod',
           //dataType: 'JSON'
         }).done(function( response ){
           //Check if succesful (then reponse will be empty string)

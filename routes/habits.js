@@ -18,7 +18,7 @@ router.get('/h', function(req, res) {
     var collection = db.get('habits');
     collection.find({}, {}, function(e, docs) {
         //console.log(docs)
-        for(var j = 0; j < docs.length; j++){
+        for(var j = 0; j < docs.length; j++) {
             for(var i = 0; i < docs[j].days.length; i++) {
                 docs[j].days[i] = new Date(docs[j].days[i]);
             };
@@ -27,6 +27,7 @@ router.get('/h', function(req, res) {
             docs[j].doneToday = streakinfo[1];
         }
         res.json(docs);
+        console.log(docs)
     });
 });
 
@@ -40,11 +41,12 @@ router.put('/date', function(req, res) {
 
     date = new Date(req.body.date)
     console.log(date)
-    date.setSeconds(0)
-    date.setMinutes(0)
-    date.setHours(0)
-    date.setMilliseconds(0)
-
+        //date.setSeconds(0)
+        //date.setMinutes(0)
+        //date.setHours(12,0,0,0)
+        //date.setMilliseconds(0)
+    date.setHours(13, 0, 0, 0)
+    console.log(date)
     collection.update({
         '_id': req.body._id
     }, {
@@ -104,10 +106,7 @@ router.put('/today', function(req, res) {
     var collection = db.get("habits");
 
     var today = new Date();
-    today.setSeconds(0);
-    today.setMinutes(0);
-    today.setHours(0);
-    today.setMilliseconds(0);
+    today.setHours(13, 0, 0, 0);
 
     collection.update({
         '_id': req.body._id
@@ -123,7 +122,6 @@ router.put('/today', function(req, res) {
                 msg: err
             }
         );
-        console.log(err)
     });
 });
 
@@ -134,16 +132,16 @@ function current_upto_today_streak(d) {
     var s = 0;
 
     var yesterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
-    yesterday.setSeconds(0);
-    yesterday.setHours(0);
-    yesterday.setMinutes(0);
-    yesterday.setMilliseconds(0);
+    //yesterday.setSeconds(0);
+    yesterday.setHours(13, 0, 0, 0);
+    //yesterday.setMinutes(0);
+    //yesterday.setMilliseconds(0);
 
     var today = new Date();
-    today.setSeconds(0);
-    today.setHours(0);
-    today.setMinutes(0);
-    today.setMilliseconds(0);
+    //today.setSeconds(0);
+    today.setHours(13, 0, 0, 0);
+    //today.setMinutes(0);
+    //today.setMilliseconds(0);
     var yesterdayDone = false;
     var todayDone = false;
 
@@ -159,7 +157,7 @@ function current_upto_today_streak(d) {
     };
 
     //if habit is not done today or yesterday, then streak is zero
-    if(yesterdayDone || todayDone){
+    if(yesterdayDone || todayDone) {
         while(consecutive(latestDay(d), nextLatestDay(d))) {
             s++;
             d = removeLatestDay(d);
@@ -167,7 +165,7 @@ function current_upto_today_streak(d) {
         s++; // since counted the consecutive links, consective days = ++;
     };
 
-    var res = [s,todayDone]; //results including if needs to be done today
+    var res = [s, todayDone]; //results including if needs to be done today
     return res;
 };
 
