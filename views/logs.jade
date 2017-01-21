@@ -1,0 +1,66 @@
+extends default
+
+block stylesheets
+    // Custom stylesheets
+    link(href='stylesheets/sidebar_stylesheet.css', rel='stylesheet')
+    link(href='stylesheets/logs_stylesheet.css', rel='stylesheet')
+    
+block javascripts
+    // Load custom JavaScript
+    
+block navigation-head
+    a.navbar-brand(href='/')
+        span.glyphicon.glyphicon-th-list
+    a.navbar-brand(href='/text').active
+        span.glyphicon.glyphicon-file
+    a.navbar-brand(href='/habits')
+        span.glyphicon.glyphicon-repeat
+        
+block navigation-drop
+    li
+        a(href='/')
+            h5 Overzicht
+    li
+        a(href='/text')
+            h5 Tekst
+    li
+        a(href='/habits')
+            h5 Habits 
+    li.active
+        a(href='/logs')
+            h5 Logs             
+
+block navigation-sidebar
+    ul.nav.nav-sidebar
+        li
+            a(href='/')
+                h5 Overzicht
+        li
+            a(href='/text')
+                h4 Tekst
+        li
+            a(href='/habits')
+                h5 Habits 
+        li.active
+            a(href='/logs')
+                h5 Logs 
+block content
+    .row
+        .col-sm-9.col-sm-offset-3.col-md-9.col-md-offset-3.col-lg-5.col-lg-offset-2
+            .well
+                form.form-horizontal
+                    .form-group
+                        .col-xs-3
+                            input#waketime.form-control(type='time')
+                        label(for="waketime").col-xs-offset-3.col-xs-4 Opstaan
+                    .form-group
+                        .col-xs-3
+                            input#waketime.form-control(type='time')
+                        .col-xs-3
+                            input#waketime.form-control(type='time')    
+                        .col-xs-6
+                            input#waketime.form-control(type='text')   
+                    .form-group
+                        .col-xs-3
+                            input#waketime.form-control(type='time')
+                        label(for="waketime").col-xs-offset-3.col-xs-4 Bedtijd 
