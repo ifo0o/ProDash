@@ -39,13 +39,9 @@ router.put('/date', function(req, res) {
     var db = req.db;
     var collection = db.get("habits");
 
-    date = new Date(req.body.date)
+    date = new Date(req.body.date);
     console.log(date)
-        //date.setSeconds(0)
-        //date.setMinutes(0)
-        //date.setHours(12,0,0,0)
-        //date.setMilliseconds(0)
-    date.setHours(13, 0, 0, 0)
+    date.setUTCHours(13, 0, 0, 0)
     console.log(date)
     collection.update({
         '_id': req.body._id
@@ -74,11 +70,8 @@ router.put('/removedate', function(req, res) {
     var collection = db.get("habits");
 
     date = new Date(req.body.date)
+    date.setUTCHours(13, 0, 0, 0);
     console.log(date)
-    date.setSeconds(0)
-    date.setMinutes(0)
-    date.setHours(0)
-    date.setMilliseconds(0)
 
     collection.update({
         '_id': req.body._id
@@ -106,7 +99,7 @@ router.put('/today', function(req, res) {
     var collection = db.get("habits");
 
     var today = new Date();
-    today.setHours(13, 0, 0, 0);
+    today.setUTCHours(13, 0, 0, 0);
     console.log(today)
 
     collection.update({
@@ -134,13 +127,13 @@ function current_upto_today_streak(d) {
 
     var yesterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
     //yesterday.setSeconds(0);
-    yesterday.setHours(13, 0, 0, 0);
+    yesterday.setUTCHours(13, 0, 0, 0);
     //yesterday.setMinutes(0);
     //yesterday.setMilliseconds(0);
 
     var today = new Date();
     //today.setSeconds(0);
-    today.setHours(13, 0, 0, 0);
+    today.setUTCHours(13, 0, 0, 0);
     //today.setMinutes(0);
     //today.setMilliseconds(0);
     var yesterdayDone = false;
