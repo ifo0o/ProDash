@@ -8,8 +8,6 @@ router.get('/', function(req, res, next) {
     });
 });
 
-
-
 /*
  * GET habits including streaks
  */
@@ -17,7 +15,6 @@ router.get('/h', function(req, res) {
     var db = req.db;
     var collection = db.get('habits');
     collection.find({}, {}, function(e, docs) {
-        //console.log(docs)
         for(var j = 0; j < docs.length; j++) {
             for(var i = 0; i < docs[j].days.length; i++) {
                 docs[j].days[i] = new Date(docs[j].days[i]);
@@ -25,24 +22,21 @@ router.get('/h', function(req, res) {
             var streakinfo = current_upto_today_streak(docs[j].days);
             docs[j].streak = streakinfo[0];
             docs[j].doneToday = streakinfo[1];
-        }
+        };
         res.json(docs);
-        console.log(docs)
     });
 });
 
 /*
  * PUT to add other dates.
- mongo ds129028.mlab.com:29028/producdash -u admin -p admin
  */
 router.put('/date', function(req, res) {
     var db = req.db;
     var collection = db.get("habits");
 
     date = new Date(req.body.date);
-    console.log(date)
     date.setUTCHours(13, 0, 0, 0)
-    console.log(date)
+
     collection.update({
         '_id': req.body._id
     }, {
@@ -63,7 +57,6 @@ router.put('/date', function(req, res) {
 
 /*
  * PUT to remove a date.
- mongo ds129028.mlab.com:29028/producdash -u admin -p admin
  */
 router.put('/removedate', function(req, res) {
     var db = req.db;
@@ -71,7 +64,6 @@ router.put('/removedate', function(req, res) {
 
     date = new Date(req.body.date)
     date.setUTCHours(13, 0, 0, 0);
-    console.log(date)
 
     collection.update({
         '_id': req.body._id
@@ -100,7 +92,6 @@ router.put('/today', function(req, res) {
 
     var today = new Date();
     today.setUTCHours(13, 0, 0, 0);
-    console.log(today)
 
     collection.update({
         '_id': req.body._id
@@ -119,27 +110,16 @@ router.put('/today', function(req, res) {
     });
 });
 
-
-
 //Helper functions to calculate streaks
 function current_upto_today_streak(d) {
-    var s = 0;
+    var s = 0; //streak
 
     var yesterday = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
-    //yesterday.setSeconds(0);
     yesterday.setUTCHours(13, 0, 0, 0);
-    //yesterday.setMinutes(0);
-    //yesterday.setMilliseconds(0);
-
     var today = new Date();
-    //today.setSeconds(0);
     today.setUTCHours(13, 0, 0, 0);
-    //today.setMinutes(0);
-    //today.setMilliseconds(0);
     var yesterdayDone = false;
     var todayDone = false;
-    console.log(today)
-    console.log(yesterday)
 
     for(var i = 0; i < d.length; i++) {
         if(d[i].getTime() == yesterday.getTime()) {
