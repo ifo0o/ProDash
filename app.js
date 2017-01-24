@@ -17,10 +17,10 @@ var logs = require('./routes/logs');
 
 var app = express();
 
-//var TelegramBot = require('node-telegram-bot-api');
-
-// replace the value below with the Telegram token you receive from @BotFather
-//const TOKEN = '293492545:AAHhD2Tk93nsSjqCTV552J1ID8JTYkuPzac';
+const myurl = "producdash.herokuapp.com";
+const muport = null;
+//const myurl = "localhost";
+//const myport = "3000"
 
 const TOKEN = process.env.TELEGRAM_TOKEN || '293492545:AAHhD2Tk93nsSjqCTV552J1ID8JTYkuPzac';
 const TelegramBot = require('node-telegram-bot-api');
@@ -40,23 +40,13 @@ bot.onText(/\/photo/, function onPhotoText(msg) {
   });
 });
 
-
-// Matches /audio
-bot.onText(/\/audio/, function onAudioText(msg) {
-  // From HTTP request
-  const url = 'https://upload.wikimedia.org/wikipedia/commons/c/c8/Example.ogg';
-  const audio = request(url);
-  bot.sendAudio(msg.chat.id, audio);
-});
-
-
 // Matches /love
 bot.onText(/\/love/, function onLoveText(msg) {
   const opts = {
     reply_to_message_id: msg.message_id,
     reply_markup: JSON.stringify({
       keyboard: [
-        ['Yes, you are the bot of my life ❤'],
+        ['Yess, you are the bot of my life ❤'],
         ['No, sorry there is another one...']
       ]
     })
@@ -71,43 +61,178 @@ bot.onText(/\/echo (.+)/, function onEchoText(msg, match) {
   bot.sendMessage(msg.chat.id, resp);
 });
 
+// Matches /echo [whatever]
+bot.onText(/\/notities/, function onEchoText(msg, match) {
+  bot.sendMessage(msg.chat.id, 'Ik pak je notities erbij! Dit zijn ze:');
+  var http = require("http");
 
-// Matches /editable
-bot.onText(/\/editable/, function onEditableText(msg) {
-  const opts = {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: 'Edit Text',
-             // we shall check for this value when we listen
-             // for "callback_query"
-            callback_data: 'edit'
-          }
-        ]
-      ]
-    }
-  };
-  bot.sendMessage(msg.from.id, 'Original Text', opts);
+    var options = {
+      "method": "GET",
+      "hostname": myurl,
+      "port": myport,
+      "path": "/text/tex",
+      "headers": {
+        "cache-control": "no-cache",
+        "postman-token": "cc8a3422-6e9c-c382-37c5-776e08e2bc93"
+      }
+    };
+
+    var req = http.request(options, function (res) {
+      var chunks = [];
+
+      res.on("data", function (chunk) {
+        chunks.push(chunk);
+      });
+
+      res.on("end", function () {
+        var body = Buffer.concat(chunks);
+        var data = JSON.parse(body);
+        bot.sendMessage(msg.chat.id, data[0].tex);
+      });
+    });
+
+    req.end();
 });
 
+bot.onText(/\/onthouden (.+)/, function onEchoText(msg, match) {
+    const resp = match[1];
+  bot.sendMessage(msg.chat.id, 'Ik help je dat onthouden; ik zet het bovenaan je lijstje!');
+  var qs = require("querystring");
+  var http = require("http");
 
-// Handle callback queries
-bot.on('callback_query', function onCallbackQuery(callbackQuery) {
-  const action = callbackQuery.data;
-  const msg = callbackQuery.message;
-  const opts = {
-    chat_id: msg.chat.id,
-    message_id: msg.message_id,
-  };
-  let text;
+    var options = {
+      "method": "PUT",
+      "hostname": myurl,
+      "port": myport,
+      "path": "/text/add",
+      "headers": {
+        "content-type": "application/x-www-form-urlencoded",
+        "cache-control": "no-cache",
+        "postman-token": "0ab217fb-6943-eb8e-9541-aeef613caa38"
+      }
+    };
 
-  if (action === 'edit') {
-    text = 'Edited Text';
+    var req = http.request(options, function (res) {
+      var chunks = [];
+
+      res.on("data", function (chunk) {
+        chunks.push(chunk);
+      });
+
+      res.on("end", function () {
+        var body = Buffer.concat(chunks);
+        console.log(body.toString());
+      });
+    });
+
+    req.write(qs.stringify({ tex: resp }));
+    req.end();
+});
+
+bot.onText(/\/taken/, function onEchoText(msg, match) {
+    const resp = match[1];
+  //bot.sendMessage(msg.chat.id, 'Uit welke lijst wil je je taken zien?');
+  var http = require("https");
+
+var options = {
+  "method": "GET",
+  "hostname": "a.wunderlist.com",
+  "port": null,
+  "path": "/api/v1/lists",
+  "headers": {
+    "x-access-token": "7f2375c1a0fa641564cbd45f53bd5c91c4475c61b19f6f423457b89acd5a",
+    "x-client-id": "6b6bfca8e9a100b98a48",
+    "cache-control": "no-cache",
+    "postman-token": "bd6b7eca-17e6-b0ca-01ab-7f2b2deb65bf"
   }
+};
 
-  bot.editMessageText(text, opts);
+var req = http.request(options, function (res) {
+  var chunks = [];
+
+  res.on("data", function (chunk) {
+    chunks.push(chunk);
+  });
+
+  res.on("end", function () {
+    var body = Buffer.concat(chunks);
+    var data = JSON.parse(body);
+    var lists = data.map(function(a) {return a.title;});
+    console.log(lists);
+    var newLists = [], size = 1;
+    while (lists.length > 0){newLists.push(lists.splice(0, size))};
+    console.log(newLists)
+    const opts = {
+      reply_to_message_id: msg.message_id,
+      reply_markup: JSON.stringify({
+        keyboard:newLists
+      })
+    };
+    bot.sendMessage(msg.chat.id, 'Uit welke lijst wil je je taken zien?', opts);
+
+    //console.log(msg.chat.id)
+    //bot.onReplyToMessage(msg.chat.id, msg.id, function(reply){
+    //    console.log(reply)
+    //})
+  });
 });
+
+req.end();
+
+});
+
+
+bot.onText(/\/herinner (.+) (\d+)/, function onEchoText(msg, match) {
+    var item = match[1];
+    var time_in_minutes = match[2];
+    time_in_minutes = parseInt(time_in_minutes)
+    bot.sendMessage(msg.chat.id, 'Ik zal je aan ' + item + ' herinneren, over ' + time_in_minutes + ' minuten!');
+    var notify = setTimeout(
+        function() {
+            bot.sendMessage(msg.chat.id, 'Hoi Ivo! Denk je aan ' + item + '?');
+        }, time_in_minutes * 60 * 1000);
+});
+
+/*REMINDER BUGGGY !!!!!!!!! */
+/*
+var must_note = false;
+var notify = {};
+bot.onText(/\/herinner (.+) (\d+)/, function onEchoText(msg, match) {
+    if(must_note) {
+        bot.sendMessage(msg.chat.id, 'Ik help je straks al aan iets herinneren!')
+    } else {
+        console.log(match)
+        var item = match[1];
+        var time_in_minutes = match[2];
+        time_in_minutes = parseInt(time_in_minutes) / 10
+        bot.sendMessage(msg.chat.id, 'Ik zal je aan ' + item + ' herinneren, over ' + time_in_minutes + ' minuten!');
+
+        must_note = true;
+
+        notify = setTimeout(
+            function() {
+                bot.sendMessage(msg.chat.id, 'Hoi Ivo! Denk je aan ' + item + '?');
+                must_note = false;
+            }, time_in_minutes * 60 * 1000);
+
+        bot.onText(/\/stop/, function onEchoText(msg, match) {
+            if(!must_note) {
+                bot.sendMessage(msg.chat.id, 'Ik help je op dit moment nergens aan herinneren!')
+            } else {
+                clearTimeout(notify)
+                must_note = false;
+                bot.sendMessage(msg.chat.id, 'Ik zal je niet langer herinneren aan ' + item + '!')
+            };
+
+        });
+    };
+});
+*/
+
+
+
+
+
 
 /*--------------------------------------------------------
 var Bot = require('node-telegram-bot');
