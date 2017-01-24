@@ -58,5 +58,34 @@ router.put('/mod', function(req, res) {
     });
 });
 
+router.put('/add', function(req, res) {
+    var db = req.db;
+    var collection = db.get("text");
+
+    console.log(req.body)
+    //first get current text
+    collection.findOne({},{},function(e,docs){
+      var curTex = docs.tex
+      //console.log(curTex)
+      var newTex = req.body.tex.concat("\n",curTex)
+      //console.log(newTex)
+      //res.send(newTex)
+      collection.update({
+          "name": "primary"
+      }, {
+          "$set": {tex:newTex}
+      }, function(err, result) {
+          res.send(
+              (err === null) ? {
+                  msg: ''
+              } : {
+                  msg: err
+              }
+          );
+          console.log(err)
+      });
+    });
+});
+
 
 module.exports = router;
