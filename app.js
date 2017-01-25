@@ -17,8 +17,10 @@ var logs = require('./routes/logs');
 
 var app = express();
 
+var http = require("http");
+var qs = require("querystring");
 const myurl = "producdash.herokuapp.com";
-const muport = null;
+const myport = null;
 //const myurl = "localhost";
 //const myport = "3000"
 
@@ -59,11 +61,71 @@ bot.onText(/\/love/, function onLoveText(msg) {
 bot.onText(/\/echo (.+)/, function onEchoText(msg, match) {
   const resp = match[1];
   bot.sendMessage(msg.chat.id, resp);
+
+  var d = app.get('./routes/text/tex');
+  console.log(d)
+});
+
+// Matches /echo [whatever]
+var conv = false;
+bot.onText(/\/wakker (([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])/, function onEchoText(msg, match) {
+    const resp = match[1];
+    conv = true;
+    bot.sendMessage(msg.chat.id, 'Was je vanochtend wakker om ' + resp + '?',{reply_markup:{force_reply:true}})
+    .then(function(sent){
+        bot.onReplyToMessage(sent.chat.id, sent.message_id, function(message){
+            if(message.text === 'ja'){
+                bot.sendMessage(message.chat.id, 'Top, staat genoteerd!')
+                var time = new Date()
+                if(resp.length===5){
+                    time.setUTCHours(resp.substring(0,2), resp.substring(3,5),0,0);
+                }else if(resp.length===4){
+                    time.setUTCHours(resp.substring(0,1), resp.substring(2,4),0,0);
+                }
+                time = time.toString()
+                console.log(time)
+                var options = {
+                  "method": "PUT",
+                  "hostname": myurl,
+                  "port": myport,
+                  "path": "/logs/new",
+                  "headers": {
+                    "content-type": "application/x-www-form-urlencoded",
+                    "cache-control": "no-cache",
+                  }
+                };
+
+                var req = http.request(options, function (res) {
+                  var chunks = [];
+
+                  res.on("data", function (chunk) {
+                    chunks.push(chunk);
+                  });
+
+                  res.on("end", function () {
+                    var body = Buffer.concat(chunks);
+                    var data = JSON.parse(body);
+                    //console.log(body.toString());
+                    if(data.sleep>0){
+                        bot.sendMessage(message.chat.id, 'Dan heb je vannacht '+data.sleep+' uren geslapen!')
+                    }else{
+                        bot.sendMessage(message.chat.id, 'Ik weet niet hoelang je hebt geslapen, omdat ik niet weet hoe laat je gisteren naar bed ging...')
+                    };
+                  });
+                });
+                req.write(qs.stringify({ date: time, wake: time }));
+                req.end();
+            }else{
+                bot.sendMessage(message.chat.id, 'Dat was dus een foutje, ik schrijf niks op!')
+            };
+        });
+    });
 });
 
 // Matches /echo [whatever]
 bot.onText(/\/notities/, function onEchoText(msg, match) {
   bot.sendMessage(msg.chat.id, 'Ik pak je notities erbij! Dit zijn ze:');
+
   var http = require("http");
 
     var options = {
@@ -92,6 +154,8 @@ bot.onText(/\/notities/, function onEchoText(msg, match) {
     });
 
     req.end();
+
+
 });
 
 bot.onText(/\/onthouden (.+)/, function onEchoText(msg, match) {
@@ -164,6 +228,8 @@ var req = http.request(options, function (res) {
     console.log(newLists)
     const opts = {
       reply_to_message_id: msg.message_id,
+      force_reply:true,
+      one_time_keyboard: true,
       reply_markup: JSON.stringify({
         keyboard:newLists
       })

@@ -18,6 +18,9 @@ router.get('/tex', function(req, res) {
 });
 
 
+
+
+
 /*
  * POST tex
  */
@@ -86,6 +89,19 @@ router.put('/add', function(req, res) {
       });
     });
 });
+
+/*
+
+router.get('/tex', function(req,res){getTheText(req,res)});
+
+var getTheText = function(req,res){
+    var db = req.db;
+    var collection = db.get('text');
+    collection.find({},{},function(e,docs){
+      res.json(docs);
+    });
+}
+*/
 
 
 module.exports = router;

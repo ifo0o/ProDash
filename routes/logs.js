@@ -43,7 +43,7 @@ router.put('/new', function(req, res) {
                     if(typeof docs != 'undefined') { //check if yesterday was logged
                         var sleep = timeDiff(new Date(docs.bed), new Date(req.body.wake));
                     } else {
-                        var sleep = 0;
+                        var sleep = -1;
                     }
                     collection.update(
                         {
@@ -55,7 +55,8 @@ router.put('/new', function(req, res) {
                         }, function(err, result) {
                             res.send(
                             (err === null) ? {
-                                msg: ''
+                                msg: '',
+                                sleep: sleep
                             } : {
                                 msg: err
                             });
