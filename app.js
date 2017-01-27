@@ -67,15 +67,62 @@ bot.onText(/\/echo (.+)/, function onEchoText(msg, match) {
 });
 
 // Matches /echo [whatever]
-var conv = false;
+bot.onText(/hey/i, function onEchoText(msg, match) {
+  const resp = match[1];
+  bot.sendMessage(msg.chat.id, 'Hoi Ivo! Wat kan ik voor je doen?');
+});
+
+var options_log = {
+  "method": "PUT",
+  "hostname": myurl,
+  "port": myport,
+  "path": "/logs/new",
+  "headers": {
+    "content-type": "application/x-www-form-urlencoded",
+    "cache-control": "no-cache",
+  }
+};
+
+bot.onText(/\/bed (([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])/, function onEchoText(msg, match) {
+    const resp = match[1];
+
+    bot.sendMessage(msg.chat.id, 'Ging je gisteren naar bed om ' + resp + '?', {
+            reply_markup: {
+                force_reply: true
+            }
+        })
+    .then(function(sent) {
+        bot.onReplyToMessage(sent.chat.id, sent.message_id, function(message) {
+            if(message.text === 'ja' || message.text === 'Ja') {
+                bot.sendMessage(message.chat.id, 'Oké, staat genoteerd voor gisteren!')
+            } else if(message.text.includes("van")) {
+                bot.sendMessage(msg.chat.id, 'Ga je vandaag naar bed om ' + resp + '?', {
+                        reply_markup: {
+                            force_reply: true
+                        }
+                    })
+                .then(function(sent) {
+                    bot.onReplyToMessage(sent.chat.id, sent.message_id, function(message) {
+                        if(message.text === 'ja' || message.text === 'Ja') {
+                            bot.sendMessage(message.chat.id, 'Oké, staat genoteerd voor vandaag!')
+                        } else {
+                            bot.sendMessage(message.chat.id, 'Oké, dan schrijf ik niks op!')
+                        }
+                    })
+                })
+            }
+        })
+    })
+});
+
+// Matches /echo [whatever]
 bot.onText(/\/wakker (([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])/, function onEchoText(msg, match) {
     const resp = match[1];
-    conv = true;
     bot.sendMessage(msg.chat.id, 'Was je vanochtend wakker om ' + resp + '?',{reply_markup:{force_reply:true}})
     .then(function(sent){
         bot.onReplyToMessage(sent.chat.id, sent.message_id, function(message){
-            if(message.text === 'ja'){
-                bot.sendMessage(message.chat.id, 'Top, staat genoteerd!')
+            if(message.text === 'ja' || message.text === 'Ja'){
+                bot.sendMessage(message.chat.id, 'Oké, staat genoteerd!')
                 var time = new Date()
                 if(resp.length===5){
                     time.setUTCHours(resp.substring(0,2), resp.substring(3,5),0,0);
@@ -154,8 +201,6 @@ bot.onText(/\/notities/, function onEchoText(msg, match) {
     });
 
     req.end();
-
-
 });
 
 bot.onText(/\/onthouden (.+)/, function onEchoText(msg, match) {
