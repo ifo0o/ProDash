@@ -19,10 +19,10 @@ var app = express();
 
 var http = require("http");
 var qs = require("querystring");
-const myurl = "producdash.herokuapp.com";
-const myport = null;
-//const myurl = "localhost";
-//const myport = "3000"
+//const myurl = "producdash.herokuapp.com";
+//const myport = null;
+const myurl = "localhost";
+const myport = "3000"
 
 const TOKEN = process.env.TELEGRAM_TOKEN || '293492545:AAHhD2Tk93nsSjqCTV552J1ID8JTYkuPzac';
 const TelegramBot = require('node-telegram-bot-api');
@@ -31,16 +31,6 @@ const options = {
   polling: true
 };
 const bot = new TelegramBot(TOKEN, options);
-
-
-// Matches /photo
-bot.onText(/\/photo/, function onPhotoText(msg) {
-  // From file path
-  const photo = `${__dirname}/../test/data/photo.gif`;
-  bot.sendPhoto(msg.chat.id, photo, {
-    caption: "I'm a bot!"
-  });
-});
 
 // Matches /love
 bot.onText(/\/love/, function onLoveText(msg) {
@@ -56,33 +46,156 @@ bot.onText(/\/love/, function onLoveText(msg) {
   bot.sendMessage(msg.chat.id, 'Do you love me?', opts);
 });
 
-
 // Matches /echo [whatever]
 bot.onText(/\/echo (.+)/, function onEchoText(msg, match) {
   const resp = match[1];
   bot.sendMessage(msg.chat.id, resp);
-
-  var d = app.get('./routes/text/tex');
-  console.log(d)
 });
 
-// Matches /echo [whatever]
-bot.onText(/hey/i, function onEchoText(msg, match) {
+// Hoi bericht
+bot.onText(/hey|hoi/i, function onEchoText(msg, match) {
   const resp = match[1];
   bot.sendMessage(msg.chat.id, 'Hoi Ivo! Wat kan ik voor je doen?');
 });
 
-var options_log = {
-  "method": "PUT",
-  "hostname": myurl,
-  "port": myport,
-  "path": "/logs/new",
-  "headers": {
-    "content-type": "application/x-www-form-urlencoded",
-    "cache-control": "no-cache",
-  }
-};
+bot.onText(/((?=.*\bgist)|(?=.*\bvand\b))((?=.*\bwak)|(?=.*\bop)|(?=.*\bbed))(?=.*(([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])).*/gi, function onLoveText(msg) {
+    console.log(msg.text)
 
+    var today_patt = /vand/;
+    var yesterday_patt = /gist/;
+    var time_patt = /(([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])/
+    var wake_patt = /wak|opst/
+    var bed_patt = /bed/
+
+    //Check if info is there
+    var info = {}
+    info.day = (today_patt.test(msg.text) && !yesterday_patt.test(msg.text)) || (!today_patt.test(msg.text) && yesterday_patt.test(msg.text)) //XOR
+    info.time = time_patt.test(msg.text)
+    info.subj = (wake_patt.test(msg.text) && !bed_patt.test(msg.text)) || (!wake_patt.test(msg.text) && bed_patt.test(msg.text)) //XOR
+    console.log(info)
+
+    if(info.day && info.time && info.subj) {
+        //Prepare info
+        var sendbody = {}
+        //Determine date
+        if(today_patt.test(msg.text)) {
+            var path = '/logs/new/today'
+        } else {
+            var path = '/logs/new/yesterday'
+        }
+        //Determine time
+        var time = time_patt.exec(msg.text)[1]
+            //Determine type
+        if(wake_patt.test(msg.text)) {
+            sendbody.wake = time;
+        } else {
+            sendbody.bed = time;
+        }
+        bot.sendMessage(msg.chat.id, 'Oké, ik zal het noteren!')
+
+        var options = {
+            "method": "PUT",
+            "hostname": myurl,
+            "port": myport,
+            "path": path,
+            "headers": {
+                "content-type": "application/x-www-form-urlencoded",
+                "cache-control": "no-cache",
+            }
+        };
+
+        var req = http.request(options, function(res) {
+            var chunks = [];
+
+            res.on("data", function(chunk) {
+                chunks.push(chunk);
+            });
+
+            res.on("end", function() {
+                var body = Buffer.concat(chunks);
+                var data = JSON.parse(body);
+                console.log(data);
+                if(data.sleep > 0) {
+                    bot.sendMessage(msg.chat.id, 'Je hebt vannacht ' + data.sleep.toFixed(1) + ' uren geslapen!')
+                };
+            });
+        });
+        req.write(qs.stringify(sendbody));
+        req.end();
+    } else {
+        bot.sendMessage(msg.chat.id, 'Hmm, je hebt me niet alle info gegeven die ik nodig heb om je slaapgegevens te noteren...')
+    };
+});
+
+
+    /*
+
+    if(today_patt.test(msg.text)){
+        if(wake_patt.test(msg.text)){
+            if(time_patt.test(msg.text)){
+                var time = time_patt.exec(msg.text)[1]
+                bot.sendMessage(msg.chat.id, 'Ik noteer dat je vandaag om '+time+' bent opgestaan!')
+                //send toda
+            }else{
+                //bot.sendMessage(msg.chat.id, 'Ik moet een tijd weten, anders kan ik natuurlijk niks opschrijven!')
+                bot.sendMessage(msg.chat.id, 'Om hoe laat ben je vandaag opgestaan?',{reply_markup:{force_reply:true}})
+                .then(function(sent){
+                    bot.onReplyToMessage(sent.chat.id, sent.message_id, function(msg){
+                        if(time_patt.test(msg.text)){
+                            var time = time_patt.exec(msg.text)[1]
+                            bot.sendMessage(msg.chat.id, 'Ik noteer dat je vandaag om '+time+' bent opgestaan!')
+                        }else{
+                            bot.sendMessage(msg.chat.id, 'Hmm, die tijd begrijp ik niet...')
+                        };
+                    });
+                });
+            };
+        }else if(bed_patt.test(msg.text)){
+            if(time_patt.test(msg.text)){
+                var time = time_patt.exec(msg.text)[1]
+                bot.sendMessage(msg.chat.id, 'Ga je vandaag naar bed om '+time+' uur?')
+            }else{
+                bot.sendMessage(msg.chat.id, 'Ik moet een tijd weten, anders kan ik natuurlijk niks opschrijven!')
+            }
+        }else{
+            bot.sendMessage(msg.chat.id, 'Gaat dit de tijd dat je opstond of dat je naar bed ging? ',{reply_markup:{force_reply:true}})
+            .then(function(sent){
+                bot.onReplyToMessage(sent.chat.id, sent.message_id, function(msg){
+                    if(wake_patt.test(msg.text)){
+                        bot.sendMessage(msg.chat.id, 'Ik noteer dat je vandaag om '+time+' bent opgestaan!')
+                    }else if(bed_patt.test(msg.text)){
+                        bot.sendMessage(msg.chat.id, 'Ik noteer dat je vandaag om '+time+' naar bed ging!')
+                    }else{
+                        bot.sendMessage(msg.chat.id, 'Hmm, dat begrijp ik niet...')
+                    }
+                });
+            });
+        }
+    }else if(yesterday_patt.test(msg.text)){
+        if(wake_patt.test(msg.text)){
+            if(time_patt.test(msg.text)){
+                var time = time_patt.exec(msg.text)[1]
+                bot.sendMessage(msg.chat.id, 'Ben je gisteren opgestaan om '+time+' uur?')
+            }else{
+                bot.sendMessage(msg.chat.id, 'Ik moet een tijd weten, anders kan ik natuurlijk niks opschrijven!')
+            }
+        }else if(bed_patt.test(msg.text)){
+            if(time_patt.test(msg.text)){
+                var time = time_patt.exec(msg.text)[1]
+                bot.sendMessage(msg.chat.id, 'Ging je gisteren naar bed om '+time+' uur?')
+            }else{
+                bot.sendMessage(msg.chat.id, 'Ik moet een tijd weten, anders kan ik natuurlijk niks opschrijven!')
+            }
+        }else{
+            //bedtijd of opstaan tijd?
+        }
+    }else{
+        bot.sendMessage(msg.chat.id, 'Ik snap er niks van!')
+    }
+    console.log(msg)
+    */
+
+/*
 bot.onText(/\/bed (([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])/, function onEchoText(msg, match) {
     const resp = match[1];
 
@@ -114,7 +227,8 @@ bot.onText(/\/bed (([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])/, function onEchoTex
         })
     })
 });
-
+*/
+/* Deprecated
 // Matches /echo [whatever]
 bot.onText(/\/wakker (([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])/, function onEchoText(msg, match) {
     const resp = match[1];
@@ -168,6 +282,7 @@ bot.onText(/\/wakker (([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9])/, function onEcho
         });
     });
 });
+*/
 
 // Matches /echo [whatever]
 bot.onText(/\/notities/, function onEchoText(msg, match) {
